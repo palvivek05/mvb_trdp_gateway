@@ -25,12 +25,14 @@
 #include "GW_trdp_pd.h"
 #include "GW_trdp_md.h"
 #include "GW_trdp_app.h"
+#include "Udp_Rx.h"
 
 /************************************************************************
  * Define Macros
 ************************************************************************/
 /* We use dynamic memory    */
-#define RESERVED_MEMORY     160000
+#define RESERVED_MEMORY     640000
+#define COM_ID_OFFSET       1000
 
 /************************************************************************
  * Define Enumeration/Structure/Unions
@@ -46,6 +48,138 @@ TRDP_IP_ADDR_T ui32SrcIpList[MAX_PD_COMID] = {
     0x0A000074, 0x0A000075, 0x0A000076, 0x0A000077, 0x0A000078,
     0x0A000079, 0x0A00007A, 0, 0x0A00007C, 0x0A00007D
 };
+const PortId_t g_PortIdList[STMVBDB_SIZE] =
+{
+    PLC_CMD_P,
+    PLC_EVR_P,
+    PLC_CONF_P,
+    PLC_PARAM_P,
+    CCU_DMA_HB_P,
+    PLC_HMI_1_P,
+    PLC_CT_P,
+    PLC_OUT_A_P,
+    PLC_OUT_B_P,
+    PLC_PR1_P,
+    PLC_PR2_P,
+    PLC_DIAG1_P,
+    PLC_DIAG2_P,
+    PLC_DIAG3_P,
+    PLC_DIAG4_P,
+    CCU_DMB_HB_P,
+    PLC_PASV_P,
+    PLC_HMI_3_P,
+    PLC_PR3_P,
+    PLC_TestTract_P,
+    PLC_CT_P2,
+    PLC_HMI_D_P,
+    PLC_HMI_2_P,
+    PLC_EVR_2_P,
+    HMI_DMA_STS_P,
+    HMI_DMA_PARAM1_P,
+    HMI_DMA_CF_P,
+    HMI_DMB_STS_P,
+    HMI_DMB_PARAM1_P,
+    HMI_DMB_CF_P,
+    ACC_DMA_P,
+    ACC_DMB_P,
+    EVR_DMA_STS_P,
+    EVR_DMA_CFG_P,
+    ACU_MCA_STS_P,
+    ACU_MCB_STS_P,
+    PPP_DMA_STS_P,
+    PPP_DMA_SW1_P,
+    PPP_DMA_SW2_P,
+    PPP_DMA_CCTV_STS_P,
+    PPP_DMA_VE_STS_P,
+    B_DMA_CONF_P,
+    B_DMA_STS_P,
+    B_DMB_CONF_P,
+    B_DMB_STS_P,
+    B_TCA_CONF_P,
+    B_TCA_STS_P,
+    B_TCB_CONF_P,
+    B_TCB_STS_P,
+    B_MCA_CONF_P,
+    B_MCA_STS_P,
+    B_MCB_CONF_P,
+    B_MCB_STS_P,
+    ACS1_DMA_P,
+    ACS2_DMA_P,
+    ACS1_DMB_P,
+    ACS2_DMB_P,
+    ACS1_TCA_P,
+    ACS2_TCA_P,
+    ACS1_TCB_P,
+    ACS2_TCB_P,
+    ACS1_MCA_P,
+    ACS2_MCA_P,
+    ACS1_MCB_P,
+    ACS2_MCB_P,
+    T1_DMA_STS_P,
+    T1_DMA_DIAG_P,
+    T2_DMA_STS_P,
+    T2_DMA_DIAG_P,
+    T1_DMB_STS_P,
+    T1_DMB_DIAG_P,
+    T2_DMB_STS_P,
+    T2_DMB_DIAG_P,
+    T1_MCA_STS_P,
+    T1_MCA_DIAG_P,
+    T2_MCA_STS_P,
+    T2_MCA_DIAG_P,
+    T1_MCB_STS_P,
+    T1_MCB_DIAG_P,
+    T2_MCB_STS_P,
+    T2_MCB_DIAG_P,
+    DO_D1_DMA_P,
+    DO_D2_DMA_P,
+    DO_D3_DMA_P,
+    DO_D4_DMA_P,
+    IO1_DMA_INPUT1_P,
+    IO1_DMA_INPUT2_P,
+    IO1_DMA_INPUT3_P,
+    IO2_DMA_INPUT1_P,
+    IO2_DMA_INPUT2_P,
+    IO2_DMA_INPUT3_P,
+    DO_D1_TCA_P,
+    DO_D2_TCA_P,
+    DO_D3_TCA_P,
+    DO_D4_TCA_P,
+    IO33_TCA_INPUT1_P,
+    IO34_TCA_INPUT1_P,
+    DO_D1_MCA_P,
+    DO_D2_MCA_P,
+    DO_D3_MCA_P,
+    DO_D4_MCA_P,
+    IO33_MCA_INPUT1_P,
+    IO34_MCA_INPUT1_P,
+    DO_D1_MCB_P,
+    DO_D2_MCB_P,
+    DO_D3_MCB_P,
+    DO_D4_MCB_P,
+    IO33_MCB_INPUT1_P,
+    IO34_MCB_INPUT1_P,
+    DO_D1_TCB_P,
+    DO_D2_TCB_P,
+    DO_D3_TCB_P,
+    DO_D4_TCB_P,
+    IO33_TCB_INPUT1_P,
+    IO34_TCB_INPUT1_P,
+    DO_D1_DMB_P,
+    DO_D2_DMB_P,
+    DO_D3_DMB_P,
+    DO_D4_DMB_P,
+    DO_D5_DMB_P,
+    DO_D6_DMB_P,
+    DO_D7_DMB_P,
+    DO_D8_DMB_P,
+    IO1_DMB_INPUT1_P,
+    IO1_DMB_INPUT2_P,
+    IO1_DMB_INPUT3_P,
+    IO2_DMB_INPUT1_P,
+    IO2_DMB_INPUT2_P,
+    IO2_DMB_INPUT3_P
+};
 
 TRDP_IP_ADDR_T ui32SrcIpUpperList[MAX_PD_COMID] = {
     0x0a00007e, 0x0a00007e, 0x0a00007e, 0x0a00007e, 0x0a00007e,
@@ -53,10 +187,136 @@ TRDP_IP_ADDR_T ui32SrcIpUpperList[MAX_PD_COMID] = {
     0x0a00007e, 0x0a00007e, 0x0a00007e, 0x0a00007e, 0x0a00007e
 };
 
-UINT32 ui32ComIdList[MAX_PD_COMID] = {
-    1000, 1001, 1002, 1003, 1004,
-    1005, 1006, 1007, 1008, 1009,
-    1012, 1016, 1020, 1021, 1014
+UINT32 ui32ComIdList[STMVBDB_SIZE] = {
+PLC_CMD_P          + COM_ID_OFFSET,
+PLC_EVR_P          + COM_ID_OFFSET,
+PLC_CONF_P         + COM_ID_OFFSET,
+PLC_PARAM_P        + COM_ID_OFFSET,
+CCU_DMA_HB_P       + COM_ID_OFFSET,
+PLC_HMI_1_P        + COM_ID_OFFSET,
+PLC_CT_P           + COM_ID_OFFSET,
+PLC_OUT_A_P        + COM_ID_OFFSET,
+PLC_OUT_B_P        + COM_ID_OFFSET,
+PLC_PR1_P          + COM_ID_OFFSET,
+PLC_PR2_P          + COM_ID_OFFSET,
+PLC_DIAG1_P        + COM_ID_OFFSET,
+PLC_DIAG2_P        + COM_ID_OFFSET,
+PLC_DIAG3_P        + COM_ID_OFFSET,
+PLC_DIAG4_P        + COM_ID_OFFSET,
+CCU_DMB_HB_P       + COM_ID_OFFSET,
+PLC_PASV_P         + COM_ID_OFFSET,
+PLC_HMI_3_P        + COM_ID_OFFSET,
+PLC_PR3_P          + COM_ID_OFFSET,
+PLC_TestTract_P    + COM_ID_OFFSET,
+PLC_CT_P2          + COM_ID_OFFSET,
+PLC_HMI_D_P        + COM_ID_OFFSET,
+PLC_HMI_2_P        + COM_ID_OFFSET,
+PLC_EVR_2_P        + COM_ID_OFFSET,
+HMI_DMA_STS_P      + COM_ID_OFFSET,
+HMI_DMA_PARAM1_P   + COM_ID_OFFSET,
+HMI_DMA_CF_P       + COM_ID_OFFSET,
+HMI_DMB_STS_P      + COM_ID_OFFSET,
+HMI_DMB_PARAM1_P   + COM_ID_OFFSET,
+HMI_DMB_CF_P       + COM_ID_OFFSET,
+ACC_DMA_P          + COM_ID_OFFSET,
+ACC_DMB_P          + COM_ID_OFFSET,
+EVR_DMA_STS_P      + COM_ID_OFFSET,
+EVR_DMA_CFG_P      + COM_ID_OFFSET,
+ACU_MCA_STS_P      + COM_ID_OFFSET,
+ACU_MCB_STS_P      + COM_ID_OFFSET,
+PPP_DMA_STS_P      + COM_ID_OFFSET,
+PPP_DMA_SW1_P      + COM_ID_OFFSET,
+PPP_DMA_SW2_P      + COM_ID_OFFSET,
+PPP_DMA_CCTV_STS_P + COM_ID_OFFSET ,
+PPP_DMA_VE_STS_P   + COM_ID_OFFSET,
+B_DMA_CONF_P       + COM_ID_OFFSET,
+B_DMA_STS_P        + COM_ID_OFFSET,
+B_DMB_CONF_P       + COM_ID_OFFSET,
+B_DMB_STS_P        + COM_ID_OFFSET,
+B_TCA_CONF_P       + COM_ID_OFFSET,
+B_TCA_STS_P        + COM_ID_OFFSET,
+B_TCB_CONF_P       + COM_ID_OFFSET,
+B_TCB_STS_P        + COM_ID_OFFSET,
+B_MCA_CONF_P       + COM_ID_OFFSET,
+B_MCA_STS_P        + COM_ID_OFFSET,
+B_MCB_CONF_P       + COM_ID_OFFSET,
+B_MCB_STS_P        + COM_ID_OFFSET,
+ACS1_DMA_P         + COM_ID_OFFSET,
+ACS2_DMA_P         + COM_ID_OFFSET,
+ACS1_DMB_P         + COM_ID_OFFSET,
+ACS2_DMB_P         + COM_ID_OFFSET,
+ACS1_TCA_P         + COM_ID_OFFSET,
+ACS2_TCA_P         + COM_ID_OFFSET,
+ACS1_TCB_P         + COM_ID_OFFSET,
+ACS2_TCB_P         + COM_ID_OFFSET,
+ACS1_MCA_P         + COM_ID_OFFSET,
+ACS2_MCA_P         + COM_ID_OFFSET,
+ACS1_MCB_P         + COM_ID_OFFSET,
+ACS2_MCB_P         + COM_ID_OFFSET,
+T1_DMA_STS_P       + COM_ID_OFFSET,
+T1_DMA_DIAG_P      + COM_ID_OFFSET,
+T2_DMA_STS_P       + COM_ID_OFFSET,
+T2_DMA_DIAG_P      + COM_ID_OFFSET,
+T1_DMB_STS_P       + COM_ID_OFFSET,
+T1_DMB_DIAG_P      + COM_ID_OFFSET,
+T2_DMB_STS_P       + COM_ID_OFFSET,
+T2_DMB_DIAG_P      + COM_ID_OFFSET,
+T1_MCA_STS_P       + COM_ID_OFFSET,
+T1_MCA_DIAG_P      + COM_ID_OFFSET,
+T2_MCA_STS_P       + COM_ID_OFFSET,
+T2_MCA_DIAG_P      + COM_ID_OFFSET,
+T1_MCB_STS_P       + COM_ID_OFFSET,
+T1_MCB_DIAG_P      + COM_ID_OFFSET,
+T2_MCB_STS_P       + COM_ID_OFFSET,
+T2_MCB_DIAG_P      + COM_ID_OFFSET,
+DO_D1_DMA_P        + COM_ID_OFFSET,
+DO_D2_DMA_P        + COM_ID_OFFSET,
+DO_D3_DMA_P        + COM_ID_OFFSET,
+DO_D4_DMA_P        + COM_ID_OFFSET,
+IO1_DMA_INPUT1_P   + COM_ID_OFFSET,
+IO1_DMA_INPUT2_P   + COM_ID_OFFSET,
+IO1_DMA_INPUT3_P   + COM_ID_OFFSET,
+IO2_DMA_INPUT1_P   + COM_ID_OFFSET,
+IO2_DMA_INPUT2_P   + COM_ID_OFFSET,
+IO2_DMA_INPUT3_P   + COM_ID_OFFSET,
+DO_D1_TCA_P        + COM_ID_OFFSET,
+DO_D2_TCA_P        + COM_ID_OFFSET,
+DO_D3_TCA_P        + COM_ID_OFFSET,
+DO_D4_TCA_P        + COM_ID_OFFSET,
+IO33_TCA_INPUT1_P  + COM_ID_OFFSET,
+IO34_TCA_INPUT1_P  + COM_ID_OFFSET,
+DO_D1_MCA_P        + COM_ID_OFFSET,
+DO_D2_MCA_P        + COM_ID_OFFSET,
+DO_D3_MCA_P        + COM_ID_OFFSET,
+DO_D4_MCA_P        + COM_ID_OFFSET,
+IO33_MCA_INPUT1_P  + COM_ID_OFFSET,
+IO34_MCA_INPUT1_P  + COM_ID_OFFSET,
+DO_D1_MCB_P        + COM_ID_OFFSET,
+DO_D2_MCB_P        + COM_ID_OFFSET,
+DO_D3_MCB_P        + COM_ID_OFFSET,
+DO_D4_MCB_P        + COM_ID_OFFSET,
+IO33_MCB_INPUT1_P  + COM_ID_OFFSET,
+IO34_MCB_INPUT1_P  + COM_ID_OFFSET,
+DO_D1_TCB_P        + COM_ID_OFFSET,
+DO_D2_TCB_P        + COM_ID_OFFSET,
+DO_D3_TCB_P        + COM_ID_OFFSET,
+DO_D4_TCB_P        + COM_ID_OFFSET,
+IO33_TCB_INPUT1_P  + COM_ID_OFFSET,
+IO34_TCB_INPUT1_P  + COM_ID_OFFSET,
+DO_D1_DMB_P        + COM_ID_OFFSET,
+DO_D2_DMB_P        + COM_ID_OFFSET,
+DO_D3_DMB_P        + COM_ID_OFFSET,
+DO_D4_DMB_P        + COM_ID_OFFSET,
+DO_D5_DMB_P        + COM_ID_OFFSET,
+DO_D6_DMB_P        + COM_ID_OFFSET,
+DO_D7_DMB_P        + COM_ID_OFFSET,
+DO_D8_DMB_P        + COM_ID_OFFSET,
+IO1_DMB_INPUT1_P   + COM_ID_OFFSET,
+IO1_DMB_INPUT2_P   + COM_ID_OFFSET,
+IO1_DMB_INPUT3_P   + COM_ID_OFFSET,
+IO2_DMB_INPUT1_P   + COM_ID_OFFSET,
+IO2_DMB_INPUT2_P   + COM_ID_OFFSET,
+IO2_DMB_INPUT3_P   + COM_ID_OFFSET
 };
 
 /* Source IP addresses to receive from - modify as needed */
@@ -345,16 +605,16 @@ static void vSetDefTrdpPdMsgConfig(void)
 {
     const char strDefMsg[25] = "ready to send data!!";
 
-    #define X(TRDP_MSGID, ENABLE, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+    #define X(TRDP_MSGID, ENABLE, MVBID, COMID , INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
         ENABLE = TRUE;\
         COMID = ui32ComIdList[TRDP_MSGID];\
-        SRCIP_1 = ui32SrcIpList[TRDP_MSGID];\
-        SRCIP_2 = ui32SrcIpUpperList[TRDP_MSGID];\
-        DEST_IP = gDestIpList[TRDP_MSGID];\
+        SRCIP_1 = 0/*ui32SrcIpList[TRDP_MSGID]*/;\
+        SRCIP_2 = 0/*ui32SrcIpUpperList[TRDP_MSGID]*/;\
+        DEST_IP = 0x0A00001E;\
         MSG_TYPE = MSG_TYPE_PD_REQUEST;\
         HANDLER_PUB = NULL;\
         HANDLER_SUB = NULL;\
-       /* memcpy(MSG_BUFF, strDefMsg, strlen(strDefMsg));*/\
+       /*memcpy(MSG_BUFF, strDefMsg, strlen(strDefMsg));*/\
         /*MSG_LEN = strlen(strDefMsg);*/\
         INTERVAL = 10000u;\
 
@@ -396,7 +656,7 @@ static void vPdConfigPrint(void)
     char strDestIp[INET_ADDRSTRLEN]  = {0};
 
     vos_printLog(VOS_LOG_INFO, "*************** PD Configuration ***************\n");
-    #define X(TRDP_MSGID, ENABLE, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+    #define X(TRDP_MSGID, ENABLE, MVBID, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
         if (ENABLE == TRUE)\
         {\
             strGetIpInString(DEST_IP, strDestIp);\
@@ -789,7 +1049,7 @@ void* pvEthTrdp(void* arg)
 
     }
 
-    #define X(TRDP_MSGID, ENABLE, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+    #define X(TRDP_MSGID, ENABLE, MVBID, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
         if (ENABLE)\
         {\
             tlp_unsubscribe(appHandle, HANDLER_SUB);\

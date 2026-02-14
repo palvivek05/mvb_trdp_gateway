@@ -24,6 +24,8 @@
 #include "GW_trdp_pd.h"
 #include "GW_trdp_app.h"
 #include "GW_uart.h"
+#include "Udp_Rx.h"
+#include "Udp_Rx.h"
 
 /************************************************************************
  * Define Macros
@@ -42,7 +44,7 @@
 ************************************************************************/
 
 /* Configuration for the Pd Message type */
-trdpPdMsgConfig_t stTrdpPdMsgConfig[MAX_PD_COMID];
+trdpPdMsgConfig_t stTrdpPdMsgConfig[129];
 
 /**********************************************************************
  * PRIVATE FUNCTION PROTOTYPES
@@ -102,7 +104,7 @@ static msgPdErr_e eUpdateTrdpPdDataTable(trdpPdMsg_t * stPdTrdpData)
             vos_printLog(VOS_LOG_INFO, "Updating the Data table for COM ID %u with Dest IP %s \n",stPdTrdpData->stPdMsg.comId, strDestIp );
 
             /* Send each COMID respecting its interval */
-            #define X(TRDP_MSGID, ENABLE, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+            #define X(TRDP_MSGID, ENABLE, MVBID, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
                 if((stPdTrdpData->stPdMsg.comId == COMID))\
                 {\
                     MSG_LEN = stPdTrdpData->ui16TrdpMsgLen;\
@@ -133,15 +135,18 @@ static msgPdErr_e eUpdateTrdpPdDataTable(trdpPdMsg_t * stPdTrdpData)
  * @param appHandle 
  * @return TRDP_ERR_T 
  */
-static TRDP_ERR_T eUpdateTrdpStackQueue(trdpPdMsg_t * stPdTrdpData, TRDP_APP_SESSION_T appHandle)
+static TRDP_ERR_T eUpdateTrdpStackQueue(trdpPdMsg_t *stPdTrdpData, TRDP_APP_SESSION_T appHandle)
 {
     TRDP_ERR_T eErr = TRDP_NO_ERR;
 
     if (NULL != stPdTrdpData)
     {
-        #define X(TRDP_MSGID, ENABLE, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+        #define X(TRDP_MSGID, ENABLE, MVBID, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
         if ((stPdTrdpData->stPdMsg.comId == COMID) && (ENABLE == TRUE)) \
         {\
+            /*acquisition of the data in internal data base */\
+            MSG_LEN = stPdTrdpData->ui16TrdpMsgLen;\
+            memcpy(MSG_BUFF,&stPdTrdpData->pui8TrdpMsg, MSG_LEN);\
             switch(stPdTrdpData->stPdMsg.msgType)\
             {\
                 case MSG_TYPE_PD_DATA :\
@@ -275,10 +280,37 @@ static void vPrintTrdpPdInfo(const TRDP_PD_INFO_T *stInfo)
 TRDP_ERR_T eInitTrdpPdStack(void)
 {
 
-    TRDP_ERR_T err = TRDP_NO_ERR;
+    TRDP_ERR_T err     = TRDP_NO_ERR;
+    uint16_t   ui16Cnt = (uint16_t)(sizeof(stMvbDB) / sizeof(stMvbDB[0]));
+
+    // for (int i = 0; i <= ui16Cnt; i++)
+    // {
+    //     err = tlp_publish(  appHandle,                  /*    our application identifier    */
+    //                         &stMvbDB->stPubHandle,               /*    our pulication identifier     */
+    //                         NULL, NULL, 
+    //                         0u,
+    //                         stMvbDB->ui32Comid,                      /*    ComID to send                 */
+    //                         0,                          /*    local consist only            */
+    //                         0,
+    //                         ui32OwnIP,                  /*    default source IP             */
+    //                         0x0A00001E,                    /*    where to send to              */
+    //                         10000,                   /*    Cycle time in us              */
+    //                         0,                          /*    not redundant                 */
+    //                         TRDP_FLAGS_NONE,            /*    Use callback for errors       */
+    //                         NULL,                       /*    default qos and ttl           */
+    //                         stMvbDB->ui8RecData,                   /*    initial data                  */
+    //                         stMvbDB->ui8MesgLen                     /*    data size                     */
+    //                         );
+    //         if (err != TRDP_NO_ERR)
+    //         {
+    //             vos_printLogStr(VOS_LOG_ERROR, "prep pd error for COM Id \n");
+    //             tlc_terminate();
+    //         }
+    // }
+
     /*    Copy the packet into the internal send queue, prepare for sending.    */
     /*    If we change the data, just re-publish it    */
-    #define X(TRDP_MSGID, ENABLE, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB,MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+    #define X(TRDP_MSGID, ENABLE, MVBID ,COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB,MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
     if (TRUE == ENABLE )\
     {\
         err = tlp_publish(  appHandle,                  /*    our application identifier    */\
@@ -319,6 +351,7 @@ TRDP_ERR_T eInitTrdpPdStack(void)
     return err;
 }
 
+
 /**
  * @brief this call back function for any event for trdp Receive message
  * 
@@ -356,7 +389,7 @@ void pdCallback(void *pRefCon,
         case TRDP_NO_ERR:
         {
             vos_printLog(VOS_LOG_INFO, "Received COM ID:%u,SRC IP:%s Msg type:%X Data Size:%d Reply COM ID:%u Reply IP :%s Dest IP:%s    \n", pMsg->comId, strRecvIp, pMsg->msgType, u32DataSize, pMsg->replyComId, replyIpAddr,cDestiIpAddr );
-            #define X(TRDP_MSGID, ENABLE, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+            #define X(TRDP_MSGID, ENABLE, MVBID, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
                 if(TRUE == ENABLE &&  ( pMsg->comId == COMID))\
                 {\
                     if((pMsg->msgType == TRDP_MSG_PR ))\
