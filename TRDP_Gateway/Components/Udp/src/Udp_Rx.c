@@ -89,6 +89,7 @@ static void print_raw_hex(const uint8_t *buf, size_t len);
 
 // Global variable 
 
+#if 0
 // data base for mvb 
 mvbDataBase_t stMvbDB[STMVBDB_SIZE] = {
     // PLC and CCU entries (0x011 - 0x028)
@@ -248,6 +249,7 @@ mvbDataBase_t stMvbDB[STMVBDB_SIZE] = {
     {.ui32MvbId = 0x622,    .ui32Comid = 2570, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO2_DMB_INPUT2_P
     {.ui32MvbId = 0x623,    .ui32Comid = 2571, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0}   // IO2_DMB_INPUT3_P
 };
+#endif
 
 /****/
 /* PRIVATE FUNCTIONS                                                   */

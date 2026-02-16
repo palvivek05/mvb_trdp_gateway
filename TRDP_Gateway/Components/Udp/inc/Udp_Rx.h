@@ -241,7 +241,7 @@ typedef struct mvbDataBase
     uint8_t        ui8NewData;
 } mvbDataBase_t;
 
-#define STMVBDB_SIZE  129U
+#define STMVBDB_SIZE  123U
 extern mvbDataBase_t stMvbDB[STMVBDB_SIZE];
 
 /****/
