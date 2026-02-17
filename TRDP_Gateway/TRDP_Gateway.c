@@ -97,8 +97,5 @@ int main(void)
             }
         }
     }
-    printf("UDP RX stopping...\n");
-    udp_close();
-
     return EXIT_SUCCESS;
 }

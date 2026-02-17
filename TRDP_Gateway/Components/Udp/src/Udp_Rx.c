@@ -85,6 +85,13 @@ static uint8_t g_rx_buffer[UDP_RX_BUFFER_SIZE];
 /****/
 static void handle_signal(int sig);
 static void print_raw_hex(const uint8_t *buf, size_t len);
+/* ------------------------------------------------------------------ */
+/* mvb_tx_create_nb_socket()                                           */
+/* Creates UDP socket, sets O_NONBLOCK, binds to source IP.           */
+/* Returns socket fd on success, -1 on failure.                       */
+/* ------------------------------------------------------------------ */
+static int mvb_tx_create_nb_socket(void);
+
 
 
 // Global variable 
@@ -251,6 +258,9 @@ mvbDataBase_t stMvbDB[STMVBDB_SIZE] = {
 };
 #endif
 
+int sock = 0;
+struct sockaddr_in dst;
+
 /****/
 /* PRIVATE FUNCTIONS                                                   */
 /****/
@@ -287,6 +297,146 @@ static void print_raw_hex(const uint8_t *buf, size_t len)
     }
     printf("\n");
 }
+
+/* ------------------------------------------------------------------ */
+/* mvb_tx_create_nb_socket()                                           */
+/* Creates UDP socket, sets O_NONBLOCK, binds to source IP.           */
+/* Returns socket fd on success, -1 on failure.                       */
+/* ------------------------------------------------------------------ */
+static int mvb_tx_create_nb_socket(void)
+{
+    int                sock;
+    int                flags;
+    int                opt;
+    struct sockaddr_in src;
+
+    /* 1. Create UDP socket */
+    sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (sock < 0)
+    {
+        perror("[MVB_TX] socket");
+        return -1;
+    }
+
+    /* 2. Set O_NONBLOCK using fcntl -- return value checked (MISRA R10.1) */
+    flags = fcntl(sock, F_GETFL, 0);
+    if (flags < 0)
+    {
+        perror("[MVB_TX] fcntl F_GETFL");
+        (void)close(sock);
+        return -1;
+    }
+
+    if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0)
+    {
+        perror("[MVB_TX] fcntl F_SETFL O_NONBLOCK");
+        (void)close(sock);
+        return -1;
+    }
+
+    printf("[MVB_TX] Socket set to O_NONBLOCK\n");
+
+    /* 3. SO_REUSEADDR */
+    opt = 1;
+    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST,
+                   &opt, (socklen_t)sizeof(opt)) < 0)
+    {
+        perror("[MVB_TX] SO_REUSEADDR");
+        /* non-fatal */
+    }
+
+    /* 4. Bind to Digi board IP so packet exits via eth1 */
+    memset(&src, 0, sizeof(src));
+    src.sin_family      = AF_INET;
+    src.sin_port        = 0;                          /* OS picks src port */
+    src.sin_addr.s_addr = htonl(INADDR_ANY);//inet_addr(MVB_TX_SRC_IP);   /* 10.0.0.160        */
+
+    if (bind(sock, (struct sockaddr *)&src, (socklen_t)sizeof(src)) < 0)
+    {
+        // fprintf(stderr, "[MVB_TX] bind %s: %s\n",
+        //         MVB_TX_SRC_IP, strerror(errno));
+        /* non-fatal: OS will route correctly anyway */
+    }
+    else
+    {
+        // printf("[MVB_TX] Bound source to %s\n", MVB_TX_SRC_IP);
+    }
+
+    return sock;
+}
+
+/**
+ * @brief 
+ * 
+ * @param sock 
+ * @param dst 
+ * @param cb 
+ * @return MVB_TX_ERR_T 
+ */
+MVB_TX_ERR_T mvb_tx_nonblocking_send(int                        sock,
+                                        const struct sockaddr_in  *dst,
+                                        const MVB_MASTER_CB       *cb)
+{
+    ssize_t         sent;
+    uint8_t         retry;
+    struct timespec retry_sleep;
+    MVB_TX_ERR_T    result;
+
+    retry_sleep.tv_sec  = 0;
+    retry_sleep.tv_nsec = 1000000L;   /* 1 ms between retries */
+    result = MVB_TX_ERR_OK;
+
+    for (retry = 0u; retry < (uint8_t)MVB_TX_SEND_RETRY_MAX; retry++)
+    {
+        sent = sendto(sock,
+                      (const void *)cb,
+                      sizeof(MVB_MASTER_CB),
+                      0,
+                      (const struct sockaddr *)dst,
+                      (socklen_t)sizeof(*dst));
+
+        if (sent > 0)
+        {
+            /* Packet handed to kernel TX buffer -- success */
+            printf("[MVB_TX] Sent %zd bytes -> %s:%u  (retry=%u)\n",
+                   sent, MVB_TX_DEST_IP, MVB_TX_UDP_PORT, (unsigned int)retry);
+            result = MVB_TX_ERR_OK;
+            break;
+        }
+
+        if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
+        {
+            /* TX buffer full -- wait 1 ms and retry */
+            fprintf(stderr,
+                    "[MVB_TX] EAGAIN on retry %u -- TX buffer full\n",
+                    (unsigned int)retry);
+            (void)nanosleep(&retry_sleep, NULL);
+            result = MVB_TX_ERR_WOULDBLOCK;
+        }
+        else if (errno == EINTR)
+        {
+            /* Interrupted by signal -- treat as transient, retry */
+            result = MVB_TX_ERR_WOULDBLOCK;
+        }
+        else
+        {
+            /* Hard error */
+            perror("[MVB_TX] sendto");
+            result = MVB_TX_ERR_SEND;
+            break;
+        }
+    }
+
+    if (result == MVB_TX_ERR_WOULDBLOCK)
+    {
+        fprintf(stderr,
+                "[MVB_TX] Packet dropped after %u retries (TX buffer busy)\n",
+                (unsigned int)MVB_TX_SEND_RETRY_MAX);
+    }
+
+    return result;
+}
+
 
 /****/
 /* PUBLIC FUNCTIONS                                                    */
@@ -422,7 +572,8 @@ void udp_close(void)
 {
     if (udp_sock >= 0)
     {
-        (void)close(udp_sock);   /* cast to (void) — intentionally ignoring close() status */
+        (void)close(udp_sock);
+        (void)close(sock);   /* cast to (void) — intentionally ignoring close() status */
         udp_sock = -1;
         printf("UDP socket closed\n");
     }
@@ -607,8 +758,28 @@ void *pvUdpThread(void *arg)
         return EXIT_FAILURE;
     }
 
+    /* Create non-blocking socket */
+    sock = mvb_tx_create_nb_socket();
+    if (sock < 0)
+    {
+        fprintf(stderr, "[MVB_TX] Failed to create non-blocking socket\n");
+        return UDP_ERR_SOCKET;
+    }
 
-    while(1)
+        /* Destination: PC 10.0.0.238:9530 */
+    memset(&dst, 0, sizeof(dst));
+    dst.sin_family      = AF_INET;
+    dst.sin_port        = htons((uint16_t)MVB_TX_UDP_PORT);
+    dst.sin_addr.s_addr = inet_addr(MVB_TX_DEST_IP);
+
+    printf("[MVB_TX] Thread started (non-blocking)\n");
+    printf("[MVB_TX]   Src     : %s\n",        MVB_TX_SRC_IP);
+    printf("[MVB_TX]   Dest    : %s:%u\n",     MVB_TX_DEST_IP, MVB_TX_UDP_PORT);
+    printf("[MVB_TX]   Size    : %zu bytes\n", sizeof(MVB_MASTER_CB));
+   // printf("[MVB_TX]   Period  : %u ms\n",     MVB_TX_INTERVAL_MS);
+    printf("[MVB_TX]   Retries : %u\n",        MVB_TX_SEND_RETRY_MAX);
+
+    while(keep_running != 0)
     {
         rx_len = 0u;
 
@@ -637,6 +808,9 @@ void *pvUdpThread(void *arg)
             }
         }
     }
+    printf("UDP RX stopping...\n");
+    udp_close();
+    return NULL;
 }
 
 /**
@@ -678,3 +852,40 @@ TRDP_ERR_T eSendMvbToTrdp(MVB_ACQUISITION_FRAME *frame)
 
     return eErr;
 }
+
+MVB_TX_ERR_T mvb_tx_build_buffer(MVB_MASTER_CB *cb,
+                                 uint16_t       pd_port,
+                                 uint8_t        fcode,
+                                 const uint8_t *data,
+                                 uint8_t        data_len)
+{
+    if ((cb == NULL) || (data == NULL))
+    {
+        return MVB_TX_ERR_PARAM;
+    }
+    if (data_len > (uint8_t)MMC_DATA_SLOT_LEN)
+    {
+        return MVB_TX_ERR_PARAM;
+    }
+
+    memset(cb, 0, sizeof(MVB_MASTER_CB));
+
+    cb->flag              = (uint16_t)MMC_FLAG_VALUE;
+    cb->reserved          = 0u;
+    cb->lineA_enable      = 1u;
+    cb->lineB_enable      = 1u;
+    cb->mvb_master_enable = 1u;
+    cb->mmc_work_type     = (uint8_t)MMC_PD_DATA;
+
+    cb->mmc_enable[0] = 1u;
+    cb->mmc_addr  [0] = pd_port;
+    cb->mmc_arg1  [0] = fcode;
+    cb->mmc_arg2  [0] = 1u;           /* source port */
+
+    cb->mmc_item_index[0] = 0u;
+    cb->mmc_data_len  [0] = (uint16_t)data_len;
+    memcpy(cb->mmc_data[0], data, (size_t)data_len);
+
+    return MVB_TX_ERR_OK;
+}
+

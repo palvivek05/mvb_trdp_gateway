@@ -283,31 +283,6 @@ TRDP_ERR_T eInitTrdpPdStack(void)
     TRDP_ERR_T err     = TRDP_NO_ERR;
     uint16_t   ui16Cnt = (uint16_t)(sizeof(stMvbDB) / sizeof(stMvbDB[0]));
 
-    // for (int i = 0; i <= ui16Cnt; i++)
-    // {
-    //     err = tlp_publish(  appHandle,                  /*    our application identifier    */
-    //                         &stMvbDB->stPubHandle,               /*    our pulication identifier     */
-    //                         NULL, NULL, 
-    //                         0u,
-    //                         stMvbDB->ui32Comid,                      /*    ComID to send                 */
-    //                         0,                          /*    local consist only            */
-    //                         0,
-    //                         ui32OwnIP,                  /*    default source IP             */
-    //                         0x0A00001E,                    /*    where to send to              */
-    //                         10000,                   /*    Cycle time in us              */
-    //                         0,                          /*    not redundant                 */
-    //                         TRDP_FLAGS_NONE,            /*    Use callback for errors       */
-    //                         NULL,                       /*    default qos and ttl           */
-    //                         stMvbDB->ui8RecData,                   /*    initial data                  */
-    //                         stMvbDB->ui8MesgLen                     /*    data size                     */
-    //                         );
-    //         if (err != TRDP_NO_ERR)
-    //         {
-    //             vos_printLogStr(VOS_LOG_ERROR, "prep pd error for COM Id \n");
-    //             tlc_terminate();
-    //         }
-    // }
-
     /*    Copy the packet into the internal send queue, prepare for sending.    */
     /*    If we change the data, just re-publish it    */
     #define X(TRDP_MSGID, ENABLE, MVBID ,COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB,MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
@@ -336,7 +311,21 @@ TRDP_ERR_T eInitTrdpPdStack(void)
         }\
         else\
         {\
-            err = tlp_subscribe(appHandle, &HANDLER_SUB, NULL, pdCallback, 0u, COMID, 0, 0, SRCIP_1, SRCIP_2, DEST_IP, TRDP_FLAGS_CALLBACK, NULL, 8000u, TRDP_TO_SET_TO_ZERO);\
+            printf(".................\n");\
+            err = tlp_subscribe( appHandle,                 /*    our application identifier           */\
+                         &HANDLER_SUB,                /*    our subscription identifier          */\
+                         NULL, pdCallback,                /*    userRef & callback function          */\
+                         0u,\
+                         COMID,                  /*    ComID                                */\
+                         0u,                        /*    topocount: local consist only        */\
+                         0u,\
+                         VOS_INADDR_ANY,            /*    source IP 1                          */\
+                         VOS_INADDR_ANY,            /*     */\
+                         DEST_IP,                    /*    Default destination IP (or MC Group) */\
+                         TRDP_FLAGS_CALLBACK,        /*   */\
+                         NULL,                      /*    default interface                    */\
+                         8000u,         /*    Time out in us                       */\
+                         TRDP_TO_SET_TO_ZERO);\
             if (err != TRDP_NO_ERR)\
             {\
                 vos_printLogStr(VOS_LOG_ERROR,"prep pd subscribe error\n");\
@@ -372,6 +361,8 @@ void pdCallback(void *pRefCon,
     char           cDestiIpAddr[INET_ADDRSTRLEN] = {0};
     UINT32         ui32BufSize                   = TRDP_FRAME_PERAMETER;
     TRDP_ERR_T     eErr                          = TRDP_NO_ERR;
+    MVB_MASTER_CB  g_mvb_cb                      = {0};
+    MVB_TX_ERR_T   build_ret                     = MVB_TX_ERR_OK;
 
     strGetIpInString(pMsg->srcIpAddr, strRecvIp);
     strGetIpInString(pMsg->replyIpAddr, replyIpAddr);
@@ -390,7 +381,7 @@ void pdCallback(void *pRefCon,
         {
             vos_printLog(VOS_LOG_INFO, "Received COM ID:%u,SRC IP:%s Msg type:%X Data Size:%d Reply COM ID:%u Reply IP :%s Dest IP:%s    \n", pMsg->comId, strRecvIp, pMsg->msgType, u32DataSize, pMsg->replyComId, replyIpAddr,cDestiIpAddr );
             #define X(TRDP_MSGID, ENABLE, MVBID, COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
-                if(TRUE == ENABLE &&  ( pMsg->comId == COMID))\
+                if((TRUE == ENABLE) && (pMsg->comId == COMID))\
                 {\
                     if((pMsg->msgType == TRDP_MSG_PR ))\
                     {\
@@ -400,22 +391,22 @@ void pdCallback(void *pRefCon,
                     {\
                         /* check store the length od pd messsage data */\
                         MSG_LEN = (u32DataSize < DATA_MAX) ? u32DataSize : DATA_MAX;\
-\
-                        /* remove the Padding from the pf Frame structure */\
-                        eErr = tau_marshall(refCon, PD_DATA_SET, (UINT8 *) pMsg, sizeof(*pMsg), MSG_BUFF, &ui32BufSize, NULL);\
-                        vos_printLog(VOS_LOG_INFO, "the value of structure is  %d \n",ui32BufSize);\
-                        if(eErr != TRDP_NO_ERR)\
+                        memcpy(&MSG_BUFF, pData, MSG_LEN);\
+                        build_ret = mvb_tx_build_buffer(&g_mvb_cb, 0x0100u, 4u, pData, (uint8_t)u32DataSize);\
+                        if (build_ret != MVB_TX_ERR_OK)\
                         {\
-                            vos_printLog(VOS_LOG_ERROR, "Please check the uart frame formate, it must have Diffrent formate %d \n",eErr);\
+                            fprintf(stderr, "[MVB_TX] build_buffer failed (%d)\n",(int)build_ret);\
                         }\
-\
-                        memcpy(&MSG_BUFF[ui32BufSize], pData, MSG_LEN);\
-\
-                        if (( pMsg->comId == COMID)  && (pMsg->destIpAddr == DEST_IP) /*&& (pMsg->destIpAddr == SRCIP_1)*/)\
+                        else\
                         {\
-                            iUartSend(iUartTtySTM2Type, TRDP_PD, MSG_BUFF, MSG_LEN + TRDP_FRAME_PERAMETER);\
+                            build_ret = mvb_tx_nonblocking_send(sock, &dst, &g_mvb_cb);\
+                            if ((build_ret != MVB_TX_ERR_OK) && (build_ret != MVB_TX_ERR_WOULDBLOCK))\
+                            {\
+                                fprintf(stderr, "[MVB_TX] Hard send error (%d)\n",\
+                                        (int)build_ret);\
+                                /* Continue -- don't stop the thread on a single hard error */\
+                            }\
                         }\
-\
                         if(pMsg->msgType == TRDP_MSG_PR )\
                         {\
                             vos_printLog(VOS_LOG_INFO, "The Request Reply recived \n");\

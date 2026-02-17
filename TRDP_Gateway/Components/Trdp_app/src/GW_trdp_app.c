@@ -608,9 +608,10 @@ static void vSetDefTrdpPdMsgConfig(void)
     #define X(TRDP_MSGID, ENABLE, MVBID, COMID , INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
         ENABLE = TRUE;\
         COMID = ui32ComIdList[TRDP_MSGID];\
+        MVBID = g_PortIdList[TRDP_MSGID];\
         SRCIP_1 = 0/*ui32SrcIpList[TRDP_MSGID]*/;\
         SRCIP_2 = 0/*ui32SrcIpUpperList[TRDP_MSGID]*/;\
-        DEST_IP = 0x0A00001E;\
+        DEST_IP = 0x0A0000EE;\
         MSG_TYPE = MSG_TYPE_PD_REQUEST;\
         HANDLER_PUB = NULL;\
         HANDLER_SUB = NULL;\
@@ -661,7 +662,7 @@ static void vPdConfigPrint(void)
         {\
             strGetIpInString(DEST_IP, strDestIp);\
             strGetIpInString(SRCIP_1, strSrcIp);\
-            vos_printLog(VOS_LOG_INFO, "The Config: %02d The ComId: %u, DestIp: %-15s, SrcIp: %-15s, msgType is %X \n",TRDP_MSGID, COMID, strDestIp, strSrcIp, MSG_TYPE);\
+            vos_printLog(VOS_LOG_INFO, "The Config: %02d The ComId: %u and MVB id: %u, DestIp: %-15s, SrcIp: %-15s, msgType is %X \n",TRDP_MSGID, COMID, MVBID, strDestIp, strSrcIp, MSG_TYPE);\
         }\
 
         TRDP_PD_MSG_CONFIG
@@ -762,11 +763,11 @@ static TRDP_ERR_T eTrdpInit(void)
     }
     else
     {
-        eErr = eInitTrdpMdStack();
-        if(TRDP_NO_ERR != eErr)
-        {
-            vos_printLog(VOS_LOG_ERROR, "Initialization eInitTrdpMdStack fail %d \n" , eErr);
-        }
+        // eErr = eInitTrdpMdStack();
+        // if(TRDP_NO_ERR != eErr)
+        // {
+        //     vos_printLog(VOS_LOG_ERROR, "Initialization eInitTrdpMdStack fail %d \n" , eErr);
+        // }
     }
 
     return eErr;
@@ -1045,7 +1046,7 @@ void* pvEthTrdp(void* arg)
         (void) tlc_process(appHandle, &rfds, &rv);
 
         /* Process the Trdp MD message for sending and reciving */
-        (void) tlm_process(appHandle, &rfds, &rv);
+       // (void) tlm_process(appHandle, &rfds, &rv);
 
     }
 

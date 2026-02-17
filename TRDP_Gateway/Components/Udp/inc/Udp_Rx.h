@@ -53,6 +53,16 @@
 //#define CCU_DMB_HB_P          (0x020)
 //#define PLC_PASV_P            (0x021)
 //#define PLC_HMI_1_P           (0x016)
+#define MMC_DATA_SLOT_LEN     (36u)
+#define MMC_DATA_NUM          (4u)
+#define MMC_DATA_SLOT_LEN     (36u)
+#define MMC_ITEM_NUM          (256u)
+#define MMC_FLAG_VALUE        (9530u)
+#define MMC_PD_DATA           (1u)
+#define MVB_TX_UDP_PORT       (5000u)       //(9530u)s
+#define MVB_TX_DEST_IP        "192.168.2.220"
+#define MVB_TX_SRC_IP         "192.168.2.238"
+#define MVB_TX_SEND_RETRY_MAX (3u)
 /****/
 /* ERROR CODES                                                         */
 /****/
@@ -67,6 +77,17 @@ typedef enum
     UDP_ERR_PARSE    = -5,
     UDP_ERR_NOT_INIT = -6
 } UDP_ERR_T;
+
+typedef enum
+{
+    MVB_TX_ERR_OK      =  0,
+    MVB_TX_ERR_PARAM   = -1,
+    MVB_TX_ERR_SOCKET  = -2,
+    MVB_TX_ERR_FCNTL   = -3,   /* failed to set O_NONBLOCK              */
+    MVB_TX_ERR_SEND    = -4,
+    MVB_TX_ERR_THREAD  = -5,
+    MVB_TX_ERR_WOULDBLOCK = -6  /* socket buffer full, packet dropped   */
+} MVB_TX_ERR_T;
 
 typedef enum
 {
@@ -241,8 +262,27 @@ typedef struct mvbDataBase
     uint8_t        ui8NewData;
 } mvbDataBase_t;
 
-#define STMVBDB_SIZE  123U
+typedef struct __attribute__((packed))
+{
+    uint16_t flag;
+    uint16_t reserved;
+    uint8_t  lineA_enable;
+    uint8_t  lineB_enable;
+    uint8_t  mvb_master_enable;
+    uint8_t  mmc_work_type;
+    uint8_t  mmc_enable [MMC_ITEM_NUM];
+    uint16_t mmc_addr   [MMC_ITEM_NUM];
+    uint8_t  mmc_arg1   [MMC_ITEM_NUM];
+    uint8_t  mmc_arg2   [MMC_ITEM_NUM];
+    uint16_t mmc_item_index[MMC_DATA_NUM];
+    uint16_t mmc_data_len  [MMC_DATA_NUM];
+    uint8_t  mmc_data      [MMC_DATA_NUM][MMC_DATA_SLOT_LEN];
+} MVB_MASTER_CB;
+
+#define STMVBDB_SIZE  129U
 extern mvbDataBase_t stMvbDB[STMVBDB_SIZE];
+extern int sock ;
+extern struct sockaddr_in dst;
 
 /****/
 /* PUBLIC FUNCTION PROTOTYPES                                          */
@@ -316,5 +356,37 @@ void *pvUdpThread(void *arg);
  * @return TRDP_ERR_T 
  */
 TRDP_ERR_T eSendMvbToTrdp(MVB_ACQUISITION_FRAME *frame);
+
+
+/**
+ * @brief 
+ * 
+ * @param cb 
+ * @param pd_port 
+ * @param fcode 
+ * @param data 
+ * @param data_len 
+ * @return MVB_TX_ERR_T 
+ */
+MVB_TX_ERR_T mvb_tx_build_buffer(MVB_MASTER_CB *cb,
+                                 uint16_t       pd_port,
+                                 uint8_t        fcode,
+                                 const uint8_t *data,
+                                 uint8_t        data_len);
+
+/**
+ * @brief 
+ * 
+ * @param sock 
+ * @param dst 
+ * @param cb 
+ * @return MVB_TX_ERR_T 
+ */
+MVB_TX_ERR_T mvb_tx_nonblocking_send(int                        sock,
+                                        const struct sockaddr_in  *dst,
+                                        const MVB_MASTER_CB       *cb);
+
+
+
 
 #endif /* UDP_RX_H */
