@@ -392,7 +392,7 @@ void pdCallback(void *pRefCon,
                         /* check store the length od pd messsage data */\
                         MSG_LEN = (u32DataSize < DATA_MAX) ? u32DataSize : DATA_MAX;\
                         memcpy(&MSG_BUFF, pData, MSG_LEN);\
-                        build_ret = mvb_tx_build_buffer(&g_mvb_cb, 0x0100u, 4u, pData, (uint8_t)u32DataSize);\
+                        build_ret = mvb_tx_build_buffer(&g_mvb_cb, MVBID, 4u, pData, (uint8_t)u32DataSize);\
                         if (build_ret != MVB_TX_ERR_OK)\
                         {\
                             fprintf(stderr, "[MVB_TX] build_buffer failed (%d)\n",(int)build_ret);\
