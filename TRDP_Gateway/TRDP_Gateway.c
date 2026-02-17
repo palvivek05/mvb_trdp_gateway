@@ -49,12 +49,42 @@
 #include <unistd.h>
 
 
+static volatile sig_atomic_t keep_running = 1;
+
+static void handle_signal(int sig);
+
+
+/**
+ * @brief  SIGINT / SIGTERM handler — sets the run flag to zero.
+ * @param  sig  Signal number (unused; cast to void for MISRA).
+ */
+static void handle_signal(int sig)
+{
+    (void)sig;
+    keep_running = 0;
+}
+
 /**
  * @brief  Application entry point.
  * @return EXIT_SUCCESS on normal shutdown, EXIT_FAILURE on init error.
  */
 int main(void)
 {
+    sighandler_t          prev_sigint;
+    sighandler_t          prev_sigterm;
+
+
+    printf("/\\Ganpti Bapa Moriya/\\\r\n");
+
+    /* Install signal handlers — check previous handler for validity */
+    prev_sigint  = signal(SIGINT,  handle_signal);
+    prev_sigterm = signal(SIGTERM, handle_signal);
+    if ((prev_sigint == SIG_ERR) || (prev_sigterm == SIG_ERR))
+    {
+        printf("Failed to install signal handlers\n");
+        return EXIT_FAILURE;
+    }
+
     /* ---- main receive loop ------------------------------------------ */
     printf("TRDP GATEWAY FW VERSION %d.%d\r\n",FW_VERSION_MAJOR,FW_VERSION_MINOR);
     vUserLedInit();
@@ -82,7 +112,7 @@ int main(void)
         }
         else
         {
-            while (TRUE)
+            while (keep_running != 0)
             {
                 if(iUledToggle() == 1)
                 {

@@ -75,7 +75,7 @@ static int udp_sock = -1;   /* -1 indicates "not initialised"         */
 /****/
 /* FILE-SCOPE STATE                                                    */
 /****/
-static volatile sig_atomic_t keep_running = 1;
+
 
 /* Large receive buffer placed in static storage to avoid stack usage  */
 static uint8_t g_rx_buffer[UDP_RX_BUFFER_SIZE];
@@ -83,7 +83,7 @@ static uint8_t g_rx_buffer[UDP_RX_BUFFER_SIZE];
 /****/
 /* PRIVATE FUNCTION PROTOTYPES                                         */
 /****/
-static void handle_signal(int sig);
+
 static void print_raw_hex(const uint8_t *buf, size_t len);
 /* ------------------------------------------------------------------ */
 /* mvb_tx_create_nb_socket()                                           */
@@ -92,171 +92,6 @@ static void print_raw_hex(const uint8_t *buf, size_t len);
 /* ------------------------------------------------------------------ */
 static int mvb_tx_create_nb_socket(void);
 
-
-
-// Global variable 
-
-#if 0
-// data base for mvb 
-mvbDataBase_t stMvbDB[STMVBDB_SIZE] = {
-    // PLC and CCU entries (0x011 - 0x028)
-    {.ui32MvbId = 0x011,    .ui32Comid = 1017, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_CMD_P
-    {.ui32MvbId = 0x012,    .ui32Comid = 1018, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_EVR_P
-    {.ui32MvbId = 0x013,    .ui32Comid = 1019, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_CONF_P
-    {.ui32MvbId = 0x014,    .ui32Comid = 1020, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_PARAM_P
-    {.ui32MvbId = 0x015,    .ui32Comid = 1021, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // CCU_DMA_HB_P
-    {.ui32MvbId = 0x016,    .ui32Comid = 1022, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_HMI_1_P
-    {.ui32MvbId = 0x017,    .ui32Comid = 1023, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_CT_P
-    {.ui32MvbId = 0x018,    .ui32Comid = 1024, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_OUT_A_P
-    {.ui32MvbId = 0x019,    .ui32Comid = 1025, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_OUT_B_P
-    {.ui32MvbId = 0x01A,    .ui32Comid = 1026, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_PR1_P
-    {.ui32MvbId = 0x01B,    .ui32Comid = 1027, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_PR2_P
-    {.ui32MvbId = 0x01C,    .ui32Comid = 1028, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_DIAG1_P
-    {.ui32MvbId = 0x01D,    .ui32Comid = 1029, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_DIAG2_P
-    {.ui32MvbId = 0x01E,    .ui32Comid = 1030, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_DIAG3_P
-    {.ui32MvbId = 0x01F,    .ui32Comid = 1031, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_DIAG4_P
-    {.ui32MvbId = 0x020,    .ui32Comid = 1032, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // CCU_DMB_HB_P
-    {.ui32MvbId = 0x021,    .ui32Comid = 1033, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_PASV_P
-    {.ui32MvbId = 0x022,    .ui32Comid = 1034, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_HMI_3_P
-    {.ui32MvbId = 0x023,    .ui32Comid = 1035, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_PR3_P
-    {.ui32MvbId = 0x024,    .ui32Comid = 1036, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_TestTract_P
-    {.ui32MvbId = 0x025,    .ui32Comid = 1037, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_CT_P2
-    {.ui32MvbId = 0x026,    .ui32Comid = 1038, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_HMI_D_P
-    {.ui32MvbId = 0x027,    .ui32Comid = 1039, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_HMI_2_P
-    {.ui32MvbId = 0x028,    .ui32Comid = 1040, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PLC_EVR_2_P
-
-    // HMI entries (0x030 - 0x035)
-    {.ui32MvbId = 0x030,    .ui32Comid = 1048, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // HMI_DMA_STS_P
-    {.ui32MvbId = 0x031,    .ui32Comid = 1049, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // HMI_DMA_PARAM1_P
-    {.ui32MvbId = 0x032,    .ui32Comid = 1050, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // HMI_DMA_CF_P
-    {.ui32MvbId = 0x033,    .ui32Comid = 1051, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // HMI_DMB_STS_P
-    {.ui32MvbId = 0x034,    .ui32Comid = 1052, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // HMI_DMB_PARAM1_P
-    {.ui32MvbId = 0x035,    .ui32Comid = 1053, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // HMI_DMB_CF_P
-
-    // ACC and EVR entries (0x041 - 0x059)
-    {.ui32MvbId = 0x041,    .ui32Comid = 1065, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACC_DMA_P
-    {.ui32MvbId = 0x049,    .ui32Comid = 1073, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACC_DMB_P
-    {.ui32MvbId = 0x051,    .ui32Comid = 1081, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // EVR_DMA_STS_P
-    {.ui32MvbId = 0x052,    .ui32Comid = 1082, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // EVR_DMA_CFG_P
-    {.ui32MvbId = 0x055,    .ui32Comid = 1085, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACU_MCA_STS_P
-    {.ui32MvbId = 0x059,    .ui32Comid = 1089, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACU_MCB_STS_P
-
-    // PPP entries (0x061 - 0x065)
-    {.ui32MvbId = 0x061,    .ui32Comid = 1097, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PPP_DMA_STS_P
-    {.ui32MvbId = 0x062,    .ui32Comid = 1098, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PPP_DMA_SW1_P
-    {.ui32MvbId = 0x063,    .ui32Comid = 1099, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PPP_DMA_SW2_P
-    {.ui32MvbId = 0x064,    .ui32Comid = 1100, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PPP_DMA_CCTV_STS_P
-    {.ui32MvbId = 0x065,    .ui32Comid = 1101, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // PPP_DMA_VE_STS_P
-
-    // B (Brake?) entries (0x071 - 0x09A)
-    {.ui32MvbId = 0x071,    .ui32Comid = 1113, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_DMA_CONF_P
-    {.ui32MvbId = 0x072,    .ui32Comid = 1114, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_DMA_STS_P
-    {.ui32MvbId = 0x079,    .ui32Comid = 1121, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_DMB_CONF_P
-    {.ui32MvbId = 0x07A,    .ui32Comid = 1122, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_DMB_STS_P
-    {.ui32MvbId = 0x081,    .ui32Comid = 1129, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_TCA_CONF_P
-    {.ui32MvbId = 0x082,    .ui32Comid = 1130, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_TCA_STS_P
-    {.ui32MvbId = 0x089,    .ui32Comid = 1137, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_TCB_CONF_P
-    {.ui32MvbId = 0x08A,    .ui32Comid = 1138, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_TCB_STS_P
-    {.ui32MvbId = 0x091,    .ui32Comid = 1145, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_MCA_CONF_P
-    {.ui32MvbId = 0x092,    .ui32Comid = 1146, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_MCA_STS_P
-    {.ui32MvbId = 0x099,    .ui32Comid = 1153, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_MCB_CONF_P
-    {.ui32MvbId = 0x09A,    .ui32Comid = 1154, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // B_MCB_STS_P
-
-    // ACS entries (0x0A1 - 0x0CD)
-    {.ui32MvbId = 0x0A1,    .ui32Comid = 1161, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS1_DMA_P
-    {.ui32MvbId = 0x0A5,    .ui32Comid = 1165, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS2_DMA_P
-    {.ui32MvbId = 0x0A9,    .ui32Comid = 1169, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS1_DMB_P
-    {.ui32MvbId = 0x0AD,    .ui32Comid = 1173, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS2_DMB_P
-    {.ui32MvbId = 0x0B1,    .ui32Comid = 1177, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS1_TCA_P
-    {.ui32MvbId = 0x0B5,    .ui32Comid = 1181, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS2_TCA_P
-    {.ui32MvbId = 0x0B9,    .ui32Comid = 1185, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS1_TCB_P
-    {.ui32MvbId = 0x0BD,    .ui32Comid = 1189, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS2_TCB_P
-    {.ui32MvbId = 0x0C1,    .ui32Comid = 1193, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS1_MCA_P
-    {.ui32MvbId = 0x0C5,    .ui32Comid = 1197, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS2_MCA_P
-    {.ui32MvbId = 0x0C9,    .ui32Comid = 1201, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS1_MCB_P
-    {.ui32MvbId = 0x0CD,    .ui32Comid = 1205, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // ACS2_MCB_P
-
-    // T (Traction?) entries (0x0D1 - 0x0EE)
-    {.ui32MvbId = 0x0D1,    .ui32Comid = 1209, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_DMA_STS_P
-    {.ui32MvbId = 0x0D2,    .ui32Comid = 1210, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_DMA_DIAG_P
-    {.ui32MvbId = 0x0D5,    .ui32Comid = 1213, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_DMA_STS_P
-    {.ui32MvbId = 0x0D6,    .ui32Comid = 1214, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_DMA_DIAG_P
-    {.ui32MvbId = 0x0D9,    .ui32Comid = 1217, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_DMB_STS_P
-    {.ui32MvbId = 0x0DA,    .ui32Comid = 1218, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_DMB_DIAG_P
-    {.ui32MvbId = 0x0DD,    .ui32Comid = 1221, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_DMB_STS_P
-    {.ui32MvbId = 0x0DE,    .ui32Comid = 1222, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_DMB_DIAG_P
-    {.ui32MvbId = 0x0E1,    .ui32Comid = 1225, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_MCA_STS_P
-    {.ui32MvbId = 0x0E2,    .ui32Comid = 1226, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_MCA_DIAG_P
-    {.ui32MvbId = 0x0E5,    .ui32Comid = 1229, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_MCA_STS_P
-    {.ui32MvbId = 0x0E6,    .ui32Comid = 1230, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_MCA_DIAG_P
-    {.ui32MvbId = 0x0E9,    .ui32Comid = 1233, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_MCB_STS_P
-    {.ui32MvbId = 0x0EA,    .ui32Comid = 1234, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T1_MCB_DIAG_P
-    {.ui32MvbId = 0x0ED,    .ui32Comid = 1237, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_MCB_STS_P
-    {.ui32MvbId = 0x0EE,    .ui32Comid = 1238, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // T2_MCB_DIAG_P
-
-    // DO (Digital Output?) DMA entries (0x101 - 0x104)
-    {.ui32MvbId = 0x101,    .ui32Comid = 1257, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D1_DMA_P
-    {.ui32MvbId = 0x102,    .ui32Comid = 1258, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D2_DMA_P
-    {.ui32MvbId = 0x103,    .ui32Comid = 1259, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D3_DMA_P
-    {.ui32MvbId = 0x104,    .ui32Comid = 1260, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D4_DMA_P
-
-    // IO DMA INPUT entries (0x111 - 0x123)
-    {.ui32MvbId = 0x111,    .ui32Comid = 1273, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO1_DMA_INPUT1_P
-    {.ui32MvbId = 0x112,    .ui32Comid = 1274, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO1_DMA_INPUT2_P
-    {.ui32MvbId = 0x113,    .ui32Comid = 1275, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO1_DMA_INPUT3_P
-    {.ui32MvbId = 0x121,    .ui32Comid = 1289, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO2_DMA_INPUT1_P
-    {.ui32MvbId = 0x122,    .ui32Comid = 1290, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO2_DMA_INPUT2_P
-    {.ui32MvbId = 0x123,    .ui32Comid = 1291, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO2_DMA_INPUT3_P
-
-    // DO TCA entries (0x201 - 0x221)
-    {.ui32MvbId = 0x201,    .ui32Comid = 1513, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D1_TCA_P
-    {.ui32MvbId = 0x202,    .ui32Comid = 1514, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D2_TCA_P
-    {.ui32MvbId = 0x203,    .ui32Comid = 1515, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D3_TCA_P
-    {.ui32MvbId = 0x204,    .ui32Comid = 1516, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D4_TCA_P
-    {.ui32MvbId = 0x211,    .ui32Comid = 1529, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO33_TCA_INPUT1_P
-    {.ui32MvbId = 0x221,    .ui32Comid = 1545, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO34_TCA_INPUT1_P
-
-    // DO MCA entries (0x301 - 0x321)
-    {.ui32MvbId = 0x301,    .ui32Comid = 1769, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D1_MCA_P
-    {.ui32MvbId = 0x302,    .ui32Comid = 1770, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D2_MCA_P
-    {.ui32MvbId = 0x303,    .ui32Comid = 1771, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D3_MCA_P
-    {.ui32MvbId = 0x304,    .ui32Comid = 1772, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D4_MCA_P
-    {.ui32MvbId = 0x311,    .ui32Comid = 1785, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO33_MCA_INPUT1_P
-    {.ui32MvbId = 0x321,    .ui32Comid = 1801, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO34_MCA_INPUT1_P
-
-    // DO MCB entries (0x401 - 0x421)
-    {.ui32MvbId = 0x401,    .ui32Comid = 2025, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D1_MCB_P
-    {.ui32MvbId = 0x402,    .ui32Comid = 2026, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D2_MCB_P
-    {.ui32MvbId = 0x403,    .ui32Comid = 2027, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D3_MCB_P
-    {.ui32MvbId = 0x404,    .ui32Comid = 2028, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D4_MCB_P
-    {.ui32MvbId = 0x411,    .ui32Comid = 2041, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO33_MCB_INPUT1_P
-    {.ui32MvbId = 0x421,    .ui32Comid = 2057, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO34_MCB_INPUT1_P
-
-    // DO TCB entries (0x501 - 0x521)
-    {.ui32MvbId = 0x501,    .ui32Comid = 2281, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D1_TCB_P
-    {.ui32MvbId = 0x502,    .ui32Comid = 2282, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D2_TCB_P
-    {.ui32MvbId = 0x503,    .ui32Comid = 2283, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D3_TCB_P
-    {.ui32MvbId = 0x504,    .ui32Comid = 2284, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D4_TCB_P
-    {.ui32MvbId = 0x511,    .ui32Comid = 2297, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO33_TCB_INPUT1_P
-    {.ui32MvbId = 0x521,    .ui32Comid = 2313, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO34_TCB_INPUT1_P
-
-    // DO DMB entries (0x601 - 0x623)
-    {.ui32MvbId = 0x601,    .ui32Comid = 2537, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D1_DMB_P
-    {.ui32MvbId = 0x602,    .ui32Comid = 2538, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D2_DMB_P
-    {.ui32MvbId = 0x603,    .ui32Comid = 2539, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D3_DMB_P
-    {.ui32MvbId = 0x604,    .ui32Comid = 2540, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D4_DMB_P
-    {.ui32MvbId = 0x605,    .ui32Comid = 2541, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D5_DMB_P
-    {.ui32MvbId = 0x606,    .ui32Comid = 2542, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D6_DMB_P
-    {.ui32MvbId = 0x607,    .ui32Comid = 2543, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D7_DMB_P
-    {.ui32MvbId = 0x608,    .ui32Comid = 2544, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // DO_D8_DMB_P
-    {.ui32MvbId = 0x611,    .ui32Comid = 2553, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO1_DMB_INPUT1_P
-    {.ui32MvbId = 0x612,    .ui32Comid = 2554, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO1_DMB_INPUT2_P
-    {.ui32MvbId = 0x613,    .ui32Comid = 2555, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO1_DMB_INPUT3_P
-    {.ui32MvbId = 0x621,    .ui32Comid = 2569, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO2_DMB_INPUT1_P
-    {.ui32MvbId = 0x622,    .ui32Comid = 2570, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0},  // IO2_DMB_INPUT2_P
-    {.ui32MvbId = 0x623,    .ui32Comid = 2571, .ui8RecData = {0}, .ui8MesgLen = 0, .stPubHandle = NULL, .ui8NewData = 0}   // IO2_DMB_INPUT3_P
-};
-#endif
 
 int sock = 0;
 struct sockaddr_in dst;
@@ -272,15 +107,7 @@ static uint16_t read_le_uint16(const uint8_t *p)
     return value;
 }
 
-/**
- * @brief  SIGINT / SIGTERM handler — sets the run flag to zero.
- * @param  sig  Signal number (unused; cast to void for MISRA).
- */
-static void handle_signal(int sig)
-{
-    (void)sig;
-    keep_running = 0;
-}
+
 
 /**
  * @brief  Print a byte buffer as hex to stdout.
@@ -676,53 +503,6 @@ void dump_mvb_frame(const MVB_ACQUISITION_FRAME *frame)
 
     eSendMvbToTrdp(frame);
 
-    // if(frame->address == PLC_EVR_P)
-    // {
-    //     printf(" frame->address == PLC_EVR_P \n: ");
-    //     stPdTrdpData.stPdMsg.comId = 1012;
-    //     memcpy(&stPdTrdpData.pui8TrdpMsg, frame->data,frame->data_len);
-    //     stPdTrdpData.ui16TrdpMsgLen = frame->data_len;
-    //     printf("\n");
-    //     eErr = eSendTrdpPdData(&stPdTrdpData, (uint32_t)frame->data_len, appHandle);
-    //     printf("eSendTrdpPdData error : %d\n",eErr);
-    // }
-    // else if(frame->address == CCU_DMB_HB_P)
-    // {
-    //     printf(" frame->address == CCU_DMB_HB_P \n: ");
-    //     stPdTrdpData.stPdMsg.comId = 1020;
-    //     memcpy(&stPdTrdpData.pui8TrdpMsg, frame->data,frame->data_len);
-    //     stPdTrdpData.ui16TrdpMsgLen = frame->data_len;
-    //     printf("\n");
-    //     eErr = eSendTrdpPdData(&stPdTrdpData, (uint32_t)frame->data_len, appHandle);
-    //     printf("eSendTrdpPdData error : %d\n",eErr);
-    // }
-    // else if(frame->address == PLC_PASV_P)
-    // {
-    //     printf(" frame->address == PLC_PASV_P \n: ");
-    //     stPdTrdpData.stPdMsg.comId = 1021;
-    //     memcpy(&stPdTrdpData.pui8TrdpMsg, frame->data,frame->data_len);
-    //     stPdTrdpData.ui16TrdpMsgLen = frame->data_len;
-    //     printf("\n");
-    //     eErr = eSendTrdpPdData(&stPdTrdpData, (uint32_t)frame->data_len, appHandle);
-    //     printf("eSendTrdpPdData error : %d\n",eErr);
-    // }
-    // else if(frame->address == PLC_HMI_1_P)
-    // {
-    //     printf(" frame->address == PLC_HMI_1_P \n: ");
-    //     stPdTrdpData.stPdMsg.comId = 1016;
-    //     memcpy(&stPdTrdpData.pui8TrdpMsg, frame->data,frame->data_len);
-    //     stPdTrdpData.ui16TrdpMsgLen = frame->data_len;
-    //     printf("\n");
-    //     eErr = eSendTrdpPdData(&stPdTrdpData, (uint32_t)frame->data_len, appHandle);
-    //     printf("eSendTrdpPdData error : %d\n",eErr);
-    // }
-    // else
-    // {
-    //     /*Do Nothing*/
-    // }
-
-
-    //eSendTrdpData(frame->data, frame->data_len, appHandle );
     printf("\n---------------------\n");
 }
 
@@ -735,20 +515,9 @@ void *pvUdpThread(void *arg)
     UDP_ERR_T             init_ret;
     UDP_ERR_T             recv_ret;
     UDP_ERR_T             parse_ret;
-    sighandler_t          prev_sigint;
-    sighandler_t          prev_sigterm;
+
     uint8_t u8Data = 0;
 
-    printf("/\\Ganpti Bapa Moriya/\\\r\n");
-
-    /* Install signal handlers — check previous handler for validity */
-    prev_sigint  = signal(SIGINT,  handle_signal);
-    prev_sigterm = signal(SIGTERM, handle_signal);
-    if ((prev_sigint == SIG_ERR) || (prev_sigterm == SIG_ERR))
-    {
-        printf("Failed to install signal handlers\n");
-        return EXIT_FAILURE;
-    }
 
     /* Initialise UDP receiver */
     init_ret = udp_init(UDP_PORT);
@@ -779,7 +548,7 @@ void *pvUdpThread(void *arg)
    // printf("[MVB_TX]   Period  : %u ms\n",     MVB_TX_INTERVAL_MS);
     printf("[MVB_TX]   Retries : %u\n",        MVB_TX_SEND_RETRY_MAX);
 
-    while(keep_running != 0)
+    while(TRUE)
     {
         rx_len = 0u;
 

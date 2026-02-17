@@ -1,5 +1,5 @@
 make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/bacancy/bacProject/dmrc/mvb_trdp_gateway/TRDP_Gateway'
+make: Entering directory '/home/bacancy/bacProject/dmrc2/mvb_trdp_gateway/TRDP_Gateway'
 mkdir -p build
 echo "### Building TRDP_Gateway.c"
 /home/bacancy/yocto-work/toolchain/sysroots/x86_64-deysdk-linux/usr/bin/arm-dey-linux-gnueabi/arm-dey-linux-gnueabi-gcc -Wall -O2 --sysroot=/home/bacancy/yocto-work/toolchain/sysroots/cortexa7t2hf-neon-vfpv4-dey-linux-gnueabi -I Middlewares/Trdp/api -I Middlewares/Trdp/vos/api -I Middlewares/Trdp/common -I Middlewares/Trdp/vos/posix -IComponents/Common/inc -IComponents/Gpio/inc -IComponents/Trdp_app/inc -IComponents/Uart/inc -IComponents/Udp/inc -I/home/bacancy/yocto-work/toolchain/sysroots/cortexa7t2hf-neon-vfpv4-dey-linux-gnueabi/usr/include/libdigiapix -march=armv7-a -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -DPOSIX -D_GNU_SOURCE -D_POSIX_C_SOURCE=200112L -Wno-unknown-pragmas -Wno-cpp -Wno-stringop-truncation -DMD_SUPPORT=1 -Os -DNO_DEBUG -c TRDP_Gateway.c -o build/TRDP_Gateway.o
@@ -71,5 +71,5 @@ echo "### Building application UDP_Receiver"
 /home/bacancy/yocto-work/toolchain/sysroots/x86_64-deysdk-linux/usr/bin/arm-dey-linux-gnueabi/arm-dey-linux-gnueabi-gcc --sysroot=/home/bacancy/yocto-work/toolchain/sysroots/cortexa7t2hf-neon-vfpv4-dey-linux-gnueabi -Wl,-rpath,/usr/lib -Wl,-rpath,/lib -Wl,--dynamic-linker=/lib/ld-linux-armhf.so.3 -o UDP_Receiver build/TRDP_Gateway.o build/GW_gpio.o build/GW_trdp_app.o build/GW_trdp_md.o build/GW_trdp_pd.o build/GW_uart.o build/Udp_Rx.o -Lbuild -ltrdp -L/home/bacancy/yocto-work/toolchain/sysroots/cortexa7t2hf-neon-vfpv4-dey-linux-gnueabi/usr/lib -ldigiapix -lm -lpthread
 /home/bacancy/yocto-work/toolchain/sysroots/x86_64-deysdk-linux/usr/bin/arm-dey-linux-gnueabi/arm-dey-linux-gnueabi-strip UDP_Receiver
 echo "### Build complete: UDP_Receiver"
-make: Leaving directory '/home/bacancy/bacProject/dmrc/mvb_trdp_gateway/TRDP_Gateway'
+make: Leaving directory '/home/bacancy/bacProject/dmrc2/mvb_trdp_gateway/TRDP_Gateway'
  
