@@ -59,7 +59,7 @@
 #define MMC_ITEM_NUM          (256u)
 #define MMC_FLAG_VALUE        (9530u)
 #define MMC_PD_DATA           (1u)
-#define MVB_TX_UDP_PORT       (5000U)       //(9530u)s
+#define MVB_TX_UDP_PORT       (9530u)       //(5000U)s
 #define MVB_TX_DEST_IP        "192.168.2.220"
 #define MVB_TX_SRC_IP         "192.168.2.238"
 #define MVB_TX_SEND_RETRY_MAX (3u)

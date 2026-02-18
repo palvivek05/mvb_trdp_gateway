@@ -611,7 +611,7 @@ static void vSetDefTrdpPdMsgConfig(void)
         MVBID = g_PortIdList[TRDP_MSGID];\
         SRCIP_1 = 0/*ui32SrcIpList[TRDP_MSGID]*/;\
         SRCIP_2 = 0/*ui32SrcIpUpperList[TRDP_MSGID]*/;\
-        DEST_IP = 0x0A0000EE;\
+        DEST_IP = 0x0A00001E/*0x0A0000EE*/;\
         MSG_TYPE = MSG_TYPE_PD_REQUEST;\
         HANDLER_PUB = NULL;\
         HANDLER_SUB = NULL;\

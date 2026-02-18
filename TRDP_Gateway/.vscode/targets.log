@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue Feb 17 14:07:21 2026
+# Make data base, printed on Wed Feb 18 10:22:12 2026
 
 # Variables
 
@@ -42,6 +42,8 @@ PWD = /home/bacancy/bacProject/dmrc2/mvb_trdp_gateway/TRDP_Gateway
 %D = $(patsubst %/,%,$(dir $%))
 # environment
 XDG_DATA_DIRS = /usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop
+# environment
+OLDPWD = /home/bacancy/.vscode-server
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # automatic
@@ -95,9 +97,9 @@ SSL_CERT_DIR = /usr/local/ssl/certs
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # environment
-VSCODE_CLI_REQUIRE_TOKEN = 784f693c-4769-49ae-9e25-35cd92fa27c8
+VSCODE_CLI_REQUIRE_TOKEN = 9d4a0d0e-7908-4bbc-80c9-c589bb21668d
 # environment
-VSCODE_NLS_CONFIG = {"userLocale":"en","osLocale":"en","resolvedLanguage":"en","defaultMessagesFile":"/home/bacancy/.vscode-server/cli/servers/Stable-b6a47e94e326b5c209d118cf0f994d6065585705/server/out/nls.messages.json","locale":"en","availableLanguages":{}}
+VSCODE_NLS_CONFIG = {"userLocale":"en","osLocale":"en","resolvedLanguage":"en","defaultMessagesFile":"/home/bacancy/.vscode-server/cli/servers/Stable-c3a26841a84f20dfe0850d0a5a9bd01da4f003ea/server/out/nls.messages.json","locale":"en","availableLanguages":{}}
 # makefile (from 'Makefile', line 13)
 CROSS_PREFIX := /home/bacancy/yocto-work/toolchain/sysroots/x86_64-deysdk-linux/usr/bin/arm-dey-linux-gnueabi/arm-dey-linux-gnueabi-
 # default
@@ -117,7 +119,7 @@ MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
 # environment
-PATH = /home/bacancy/.vscode-server/cli/servers/Stable-b6a47e94e326b5c209d118cf0f994d6065585705/server/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+PATH = /home/bacancy/.vscode-server/cli/servers/Stable-c3a26841a84f20dfe0850d0a5a9bd01da4f003ea/server/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # default
 MAKEFILES := 
 # environment
@@ -133,7 +135,7 @@ OBJ_FILES := build/TRDP_Gateway.o build/GW_gpio.o build/GW_trdp_app.o build/GW_t
 # environment
 APPLICATION_INSIGHTS_NO_STATSBEAT = true
 # environment
-SSH_CLIENT = 10.0.0.110 58206 22
+SSH_CLIENT = 10.0.0.238 60072 22
 # environment
 LESSCLOSE = /usr/bin/lesspipe %s %s
 # automatic
@@ -149,7 +151,7 @@ VOS_INCPATH = -I $(TRDP_BASE)/vos/api -I $(TRDP_BASE)/common
 # 'override' directive
 GNUMAKEFLAGS := 
 # environment
-BROWSER = /home/bacancy/.vscode-server/cli/servers/Stable-b6a47e94e326b5c209d118cf0f994d6065585705/server/bin/helpers/browser.sh
+BROWSER = /home/bacancy/.vscode-server/cli/servers/Stable-c3a26841a84f20dfe0850d0a5a9bd01da4f003ea/server/bin/helpers/browser.sh
 # environment
 LOGNAME = bacancy
 # makefile
@@ -167,20 +169,20 @@ INCPATH = -I $(TRDP_BASE)/api
 # makefile (from 'Makefile', line 84)
 LDFLAGS := --sysroot=/home/bacancy/yocto-work/toolchain/sysroots/cortexa7t2hf-neon-vfpv4-dey-linux-gnueabi -Wl,-rpath,/usr/lib -Wl,-rpath,/lib -Wl,--dynamic-linker=/lib/ld-linux-armhf.so.3
 # makefile (from 'Makefile', line 53)
+ 
 TRDP_SRC_FILES := Middlewares/Trdp/common/tau_cstinfo.c Middlewares/Trdp/common/tau_ctrl.c Middlewares/Trdp/common/tau_dnr.c Middlewares/Trdp/common/tau_marshall.c Middlewares/Trdp/common/tau_so_if.c Middlewares/Trdp/common/tau_tti.c Middlewares/Trdp/common/tau_xmarshall.c Middlewares/Trdp/common/tau_xml.c Middlewares/Trdp/common/tau_xsession.c Middlewares/Trdp/common/tlc_if.c Middlewares/Trdp/common/tlm_if.c Middlewares/Trdp/common/tlp_if.c Middlewares/Trdp/common/trdp_dllmain.c Middlewares/Trdp/common/trdp_mdcom.c Middlewares/Trdp/common/trdp_pdcom.c Middlewares/Trdp/common/trdp_pdindex.c Middlewares/Trdp/common/trdp_stats.c Middlewares/Trdp/common/trdp_utils.c Middlewares/Trdp/common/trdp_xml.c Middlewares/Trdp/vos/common/vos_mem.c Middlewares/Trdp/vos/common/vos_utils.c Middlewares/Trdp/vos/posix/vos_shared_mem.c Middlewares/Trdp/vos/posix/vos_sock.c Middlewares/Trdp/vos/posix/vos_thread.c
 # environment
 VSCODE_AGENT_FOLDER = /home/bacancy/.vscode-server
 # environment
-_ = /home/bacancy/.vscode-server/cli/servers/Stable-b6a47e94e326b5c209d118cf0f994d6065585705/server/node
+_ = /home/bacancy/.vscode-server/cli/servers/Stable-c3a26841a84f20dfe0850d0a5a9bd01da4f003ea/server/node
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
- 
 # makefile (from 'Makefile', line 109)
 CFLAGS := -Wall -O2 --sysroot=/home/bacancy/yocto-work/toolchain/sysroots/cortexa7t2hf-neon-vfpv4-dey-linux-gnueabi -I Middlewares/Trdp/api -I Middlewares/Trdp/vos/api -I Middlewares/Trdp/common -I Middlewares/Trdp/vos/posix -IComponents/Common/inc -IComponents/Gpio/inc -IComponents/Trdp_app/inc -IComponents/Uart/inc -IComponents/Udp/inc -I/home/bacancy/yocto-work/toolchain/sysroots/cortexa7t2hf-neon-vfpv4-dey-linux-gnueabi/usr/include/libdigiapix -march=armv7-a -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -DPOSIX -D_GNU_SOURCE -D_POSIX_C_SOURCE=200112L -Wno-unknown-pragmas -Wno-cpp -Wno-stringop-truncation -DMD_SUPPORT=1 -Os -DNO_DEBUG
 # makefile (from 'Makefile', line 27)
 TRDP_BASE := Middlewares/Trdp
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1000/vscode-ipc-a15a3907-377d-4980-a176-f49f242d6f67.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1000/vscode-ipc-865518c3-d54f-441a-84db-e39cedddc481.sock
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -188,7 +190,7 @@ HOME = /home/bacancy
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-XDG_SESSION_ID = 2
+XDG_SESSION_ID = 8
 # makefile (from 'Makefile', line 9)
 TOOLCHAIN_DIR := /home/bacancy/yocto-work/toolchain
 # makefile (from 'Makefile', line 63)
@@ -220,9 +222,9 @@ HOST_DIR := /home/bacancy/yocto-work/toolchain/sysroots/x86_64-deysdk-linux
 # environment
 VSCODE_ESM_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
-SSH_CONNECTION = 10.0.0.110 58206 10.0.0.140 22
+SSH_CONNECTION = 10.0.0.238 60072 10.0.0.140 22
 # variable set hash-table stats:
-# Load=105/1024=10%, Rehash=0, Collisions=5/209=2%
+# Load=106/1024=10%, Rehash=0, Collisions=5/210=2%
 
 # Pattern-specific Variable Values
 
@@ -277,7 +279,7 @@ Middlewares/Trdp/common/tau_cstinfo.c:
 build/GW_trdp_app.o: Components/Trdp_app/src/GW_trdp_app.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'GW_trdp_app'
-#  Last modified 2026-02-17 14:06:07.99355705
+#  Last modified 2026-02-17 18:37:14.96017454
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
@@ -300,14 +302,14 @@ Components/Trdp_app/src/GW_trdp_md.c:
 # Not a target:
 TRDP_Gateway.c:
 #  Implicit rule search has been done.
-#  Last modified 2026-02-17 14:06:07.983556937
+#  Last modified 2026-02-17 14:14:02.283309369
 #  File has been updated.
 #  Successfully updated.
 
 build/TRDP_Gateway.o: TRDP_Gateway.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'TRDP_Gateway'
-#  Last modified 2026-02-17 14:06:07.997557095
+#  Last modified 2026-02-17 18:28:42.686989896
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
@@ -335,11 +337,12 @@ build/vos_shared_mem.o:
 # Not a target:
 Components/Trdp_app/src/GW_trdp_pd.c:
 #  Implicit rule search has been done.
-#  Last modified 2026-02-17 14:06:07.966556745
+#  Last modified 2026-02-17 15:12:03.246194136
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
+ 
 build/trdp_pdindex.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -370,7 +373,6 @@ build/tau_cstinfo.o: Middlewares/Trdp/common/tau_cstinfo.c | build
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=2/16=12%
 #  recipe to execute (from 'Makefile', line 121):
- 
 	@echo "### Building $(notdir $<)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
@@ -409,7 +411,7 @@ build/trdp_utils.o:
 build/GW_uart.o: Components/Uart/src/GW_uart.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'GW_uart'
-#  Last modified 2026-02-17 14:06:07.997557095
+#  Last modified 2026-02-17 18:28:57.157474937
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
@@ -444,7 +446,7 @@ build/vos_mem.o:
 
 UDP_Receiver: build/TRDP_Gateway.o build/GW_gpio.o build/GW_trdp_app.o build/GW_trdp_md.o build/GW_trdp_pd.o build/GW_uart.o build/Udp_Rx.o build/libtrdp.a
 #  Implicit rule search has not been done.
-#  Last modified 2026-02-17 14:06:37.572872819
+#  Last modified 2026-02-17 18:37:24.57783293
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
@@ -509,16 +511,17 @@ all: UDP_Receiver
 
 build:
 #  Implicit rule search has not been done.
-#  Last modified 2026-02-17 14:06:37.506872155
+#  Last modified 2026-02-17 18:37:24.502835591
 #  File has been updated.
 #  Successfully updated.
+ 
 #  recipe to execute (from 'Makefile', line 118):
 	@mkdir -p $(OBJ_DIR)
 
 build/GW_trdp_pd.o: Components/Trdp_app/src/GW_trdp_pd.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'GW_trdp_pd'
-#  Last modified 2026-02-17 14:06:07.997557095
+#  Last modified 2026-02-17 18:28:57.017479891
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
@@ -528,7 +531,7 @@ build/GW_trdp_pd.o: Components/Trdp_app/src/GW_trdp_pd.c | build
 build/GW_trdp_md.o: Components/Trdp_app/src/GW_trdp_md.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'GW_trdp_md'
-#  Last modified 2026-02-17 14:06:07.99355705
+#  Last modified 2026-02-17 18:28:47.576815251
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
@@ -537,7 +540,7 @@ build/GW_trdp_md.o: Components/Trdp_app/src/GW_trdp_md.c | build
 
 build/libtrdp.a: build/tau_cstinfo.o build/tau_ctrl.o build/tau_dnr.o build/tau_marshall.o build/tau_so_if.o build/tau_tti.o build/tau_xmarshall.o build/tau_xml.o build/tau_xsession.o build/tlc_if.o build/tlm_if.o build/tlp_if.o build/trdp_dllmain.o build/trdp_mdcom.o build/trdp_pdcom.o build/trdp_pdindex.o build/trdp_stats.o build/trdp_utils.o build/trdp_xml.o build/vos_mem.o build/vos_utils.o build/vos_shared_mem.o build/vos_sock.o build/vos_thread.o build/trdp_mdcom.o build/tlm_if.o
 #  Implicit rule search has not been done.
-#  Last modified 2026-02-17 14:06:37.504872135
+#  Last modified 2026-02-17 18:37:24.500835662
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
@@ -556,7 +559,7 @@ build/trdp_xml.o:
 build/GW_gpio.o: Components/Gpio/src/GW_gpio.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'GW_gpio'
-#  Last modified 2026-02-17 14:06:07.992557039
+#  Last modified 2026-02-17 18:28:42.779986568
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
@@ -566,13 +569,12 @@ build/GW_gpio.o: Components/Gpio/src/GW_gpio.c | build
 # Not a target:
 Components/Trdp_app/src/GW_trdp_app.c:
 #  Implicit rule search has been done.
-#  Last modified 2026-02-17 14:06:07.966556745
+#  Last modified 2026-02-17 18:37:08.48340506
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 build/vos_thread.o:
- 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -580,7 +582,7 @@ build/vos_thread.o:
 build/Udp_Rx.o: Components/Udp/src/Udp_Rx.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'Udp_Rx'
-#  Last modified 2026-02-17 14:06:07.998557107
+#  Last modified 2026-02-17 18:28:58.819416146
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
@@ -608,7 +610,7 @@ build/trdp_pdcom.o:
 # Not a target:
 Components/Udp/src/Udp_Rx.c:
 #  Implicit rule search has been done.
-#  Last modified 2026-02-17 14:06:07.967556756
+#  Last modified 2026-02-17 18:28:22.468719525
 #  File has been updated.
 #  Successfully updated.
 
@@ -641,6 +643,6 @@ vpath %.h Middlewares/Trdp/api:Middlewares/Trdp/vos/api:Middlewares/Trdp/common:
 # strcache performance: lookups = 224 / hit rate = 40%
 # hash-table stats:
 # Load=134/8192=2%, Rehash=0, Collisions=0/224=0%
-# Finished Make data base on Tue Feb 17 14:07:21 2026
+# Finished Make data base on Wed Feb 18 10:22:12 2026
 
  
