@@ -18,9 +18,11 @@ STRIP        := $(CROSS_PREFIX)strip
 #-----------------------
 # Project files
 #-----------------------
+MQTT_DIR  := Middlewares/Mqtt
 TARGET    := UDP_Receiver
 OBJ_DIR   := build
 TRDP_LIB  := $(OBJ_DIR)/libtrdp.a
+MQTT_LIB  := $(MQTT_DIR)/lib/libmosquitto.a
 
 TARGET_VOS = posix
 TARGET_OS  = LINUX
@@ -32,6 +34,7 @@ TRDP_BASE  := Middlewares/Trdp
 INCPATH   += -I $(TRDP_BASE)/api
 VOS_PATH  += -I $(TRDP_BASE)/vos/$(TARGET_VOS)
 VOS_INCPATH += -I $(TRDP_BASE)/vos/api -I $(TRDP_BASE)/common
+MQTT_INCPATH += -I $(MQTT_DIR)/inc
 
 TRDP_SRC  := $(TRDP_BASE)/common \
              $(TRDP_BASE)/vos/common \
@@ -58,12 +61,12 @@ OBJ_FILES := $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_FILES)))
 TRDP_OBJ_FILES := $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(TRDP_SRC_FILES)))
 
 VPATH = . $(dir $(SRC_FILES)) $(TRDP_SRC)
-vpath %.h $(TRDP_INC)
+vpath %.h $(TRDP_INC) $(MQTT_INCPATH)
 
 INC_DIRS := $(wildcard Components/*/inc)
 INCLUDES := $(addprefix -I,$(INC_DIRS))
 
-ALL_INCLUDES := $(INCPATH) $(VOS_INCPATH) $(VOS_PATH) $(INCLUDES)
+ALL_INCLUDES := $(INCPATH) $(VOS_INCPATH) $(VOS_PATH) $(INCLUDES) $(MQTT_INCPATH)
 
 #-----------------------
 # Compiler flags
@@ -85,7 +88,7 @@ LDFLAGS := --sysroot=$(SYSROOT_DIR) \
            -Wl,-rpath,/usr/lib -Wl,-rpath,/lib \
            -Wl,--dynamic-linker=/lib/ld-linux-armhf.so.3
 
-LIBS := -L$(OBJ_DIR) -ltrdp -L$(SYSROOT_DIR)/usr/lib -ldigiapix -lm -lpthread
+LIBS := -L$(OBJ_DIR) -ltrdp -L$(SYSROOT_DIR)/usr/lib -ldigiapix -lm -lpthread -L$(MQTT_DIR)/lib -lmosquitto
 
 #-----------------------
 # MD support default ON
@@ -128,7 +131,7 @@ $(TRDP_LIB): $(TRDP_OBJ_FILES)
 	@rm -f $(TRDP_OBJ_FILES)
 
 # Link application
-$(TARGET): $(OBJ_FILES) $(TRDP_LIB)
+$(TARGET): $(OBJ_FILES) $(TRDP_LIB) $(MQTT_LIB)
 	@echo "### Building application $(TARGET)"
 	@$(CC) $(LDFLAGS) -o $@ $(OBJ_FILES) $(LIBS)
 	@$(STRIP) $@

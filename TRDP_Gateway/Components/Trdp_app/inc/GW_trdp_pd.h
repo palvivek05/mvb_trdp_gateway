@@ -287,6 +287,14 @@ TRDP_ERR_T eSendTrdpPdData(trdpPdMsg_t *stPdTrdpData, uint32_t u32DataSize, TRDP
  */
 TRDP_ERR_T eInitTrdpPdStack(void);
 
+ /**
+  * @brief 
+  * 
+  * @param u32iComId 
+  * @return uint8_t* 
+  */
+ uint8_t *pvGetDataFromDb(uint32_t u32iComId);
+
 
 /***********************************************************************
 * END OF FILE

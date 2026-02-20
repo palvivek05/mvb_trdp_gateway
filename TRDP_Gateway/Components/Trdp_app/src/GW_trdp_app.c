@@ -1008,6 +1008,7 @@ void* pvEthTrdp(void* arg)
         vos_printLog(VOS_LOG_ERROR, "Failed to init eTrdpInit, error\n" );
     }
 
+
     /* update the trdp stack if there is any update in configuration */
     err = tlc_updateSession(appHandle);
     if (err != TRDP_NO_ERR)

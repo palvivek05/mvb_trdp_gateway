@@ -44,9 +44,7 @@
 #include "GW_trdp_pd.h"
 #include "GW_uart.h"
 #include "Udp_Rx.h"
-
-#include <stdlib.h>
-#include <unistd.h>
+#include "mqtt.h"
 
 
 static volatile sig_atomic_t keep_running = 1;
@@ -73,7 +71,6 @@ int main(void)
     sighandler_t          prev_sigint;
     sighandler_t          prev_sigterm;
 
-
     printf("/\\Ganpti Bapa Moriya/\\\r\n");
 
     /* Install signal handlers — check previous handler for validity */
@@ -90,7 +87,7 @@ int main(void)
     vUserLedInit();
     iUartTtySTM2Type = iUartInit(UART_TTYSTM2_PORT, UART_TTYSTM2_BAUDRATE);
 
-    pthread_t stThreadTrdpId, stuartRecId, stUdpThreadId;
+    pthread_t stThreadTrdpId, stuartRecId, stUdpThreadId, stMqttThreadId;
     int iRet = 0;
 
     /**
@@ -112,19 +109,28 @@ int main(void)
         }
         else
         {
-            while (keep_running != 0)
+            iRet = pthread_create(&stMqttThreadId, NULL, pvMqttThread, NULL);
+            if (iRet != 0)
             {
-                if(iUledToggle() == 1)
-                {
-                    printf(" led toggle error\r\n");
-                }
-                else
-                {
-                    /*Do Nothing*/
-                }
-                /* Yield to reduce CPU consumption */
-                (void)sleep(1);
+                vos_printLog(VOS_LOG_ERROR," Mqtt Thread Init failed!\n");
             }
+            else
+            {
+                while (keep_running != 0)
+                {
+                    if(iUledToggle() == 1)
+                    {
+                        printf(" led toggle error\r\n");
+                    }
+                    else
+                    {
+                        /*Do Nothing*/
+                    }
+                    /* Yield to reduce CPU consumption */
+                    (void)sleep(1);
+                }
+            }
+            
         }
     }
     return EXIT_SUCCESS;

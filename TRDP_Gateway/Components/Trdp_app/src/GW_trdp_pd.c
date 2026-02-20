@@ -277,6 +277,28 @@ static void vPrintTrdpPdInfo(const TRDP_PD_INFO_T *stInfo)
  * PUBLIC FUNCTIONS
  **********************************************************************/
 
+ /**
+  * @brief 
+  * 
+  * @param u32iComId 
+  * @return uint8_t* 
+  */
+ uint8_t *pvGetDataFromDb(uint32_t u32iComId)
+ {
+    uint8_t *ui8DataAdd = NULL;
+
+    #define X(TRDP_MSGID, ENABLE, MVBID ,COMID, INTERVAL, DEST_IP, SRCIP_1, SRCIP_2, HANDLER_PUB, HANDLER_SUB, MSG_BUFF, MSG_LEN, NEW_DATA, MSG_TYPE )\
+        if(u32iComId == COMID)\
+        {\
+            ui8DataAdd = MSG_BUFF;\
+        }
+
+    TRDP_PD_MSG_CONFIG
+    #undef X
+
+    return ui8DataAdd;
+ }
+
 TRDP_ERR_T eInitTrdpPdStack(void)
 {
 
@@ -311,7 +333,6 @@ TRDP_ERR_T eInitTrdpPdStack(void)
         }\
         else\
         {\
-            printf(".................\n");\
             err = tlp_subscribe( appHandle,                 /*    our application identifier           */\
                          &HANDLER_SUB,                /*    our subscription identifier          */\
                          NULL, pdCallback,                /*    userRef & callback function          */\
@@ -324,7 +345,7 @@ TRDP_ERR_T eInitTrdpPdStack(void)
                          DEST_IP,                    /*    Default destination IP (or MC Group) */\
                          TRDP_FLAGS_CALLBACK,        /*   */\
                          NULL,                      /*    default interface                    */\
-                         8000u,         /*    Time out in us                       */\
+                         8000,                    /*    Time out in us                       */\
                          TRDP_TO_SET_TO_ZERO);\
             if (err != TRDP_NO_ERR)\
             {\
