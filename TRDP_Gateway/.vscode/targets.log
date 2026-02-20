@@ -6,13 +6,14 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Feb 20 12:33:49 2026
+# Make data base, printed on Fri Feb 20 17:02:21 2026
 
 # Variables
 
 # environment
 LC_ALL = C
 # makefile (from 'Makefile', line 15)
+ 
 AR := /home/bacancy/yocto-work/toolchain/sysroots/x86_64-deysdk-linux/usr/bin/arm-dey-linux-gnueabi/arm-dey-linux-gnueabi-ar
 # environment
 VSCODE_RECONNECTION_GRACE_TIME = 10800000
@@ -61,7 +62,6 @@ MAKEFLAGS = pqrR
 # makefile
 CURDIR := /home/bacancy/bacProject/dmrc2/mvb_trdp_gateway/TRDP_Gateway
 # environment
- 
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
@@ -144,6 +144,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # makefile (from 'Makefile', line 37)
 MQTT_INCPATH = -I $(MQTT_DIR)/inc
 # makefile (from 'Makefile', line 69)
+ 
 ALL_INCLUDES := -I Middlewares/Trdp/api -I Middlewares/Trdp/vos/api -I Middlewares/Trdp/common -I Middlewares/Trdp/vos/posix -IComponents/Common/inc -IComponents/Gpio/inc -IComponents/Mqtt/inc -IComponents/Trdp_app/inc -IComponents/Uart/inc -IComponents/Udp/inc -I Middlewares/Mqtt/inc
 # environment
 LS_COLORS = 
@@ -184,7 +185,7 @@ CFLAGS := -Wall -O2 --sysroot=/home/bacancy/yocto-work/toolchain/sysroots/cortex
 # makefile (from 'Makefile', line 29)
 TRDP_BASE := Middlewares/Trdp
 # environment
-VSCODE_IPC_HOOK_CLI = /run/user/1000/vscode-ipc-855dded9-1e1d-43ec-b7be-d5c5332312ec.sock
+VSCODE_IPC_HOOK_CLI = /run/user/1000/vscode-ipc-914e8f77-8749-4600-9540-978199c9640c.sock
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -212,7 +213,6 @@ TRDP_INC := Middlewares/Trdp/api Middlewares/Trdp/vos/api Middlewares/Trdp/commo
 # environment
 STM32_PRG_PATH = /home/bacancy/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin
 # makefile (from 'Makefile', line 107)
- 
 DEBUG = FALSE
 # makefile (from 'Makefile', line 16)
 STRIP := /home/bacancy/yocto-work/toolchain/sysroots/x86_64-deysdk-linux/usr/bin/arm-dey-linux-gnueabi/arm-dey-linux-gnueabi-strip
@@ -287,16 +287,34 @@ build/tau_dnr.o:
 # Not a target:
 TRDP_Gateway.c:
 #  Implicit rule search has been done.
-#  Last modified 2026-02-19 17:45:09.978851474
+#  Last modified 2026-02-20 16:08:01.411858744
 #  File has been updated.
 #  Successfully updated.
 
 build/TRDP_Gateway.o: TRDP_Gateway.c | build
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'TRDP_Gateway'
-#  Last modified 2026-02-19 17:45:51.168255279
+#  Last modified 2026-02-20 16:05:12.171470174
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := build/TRDP_Gateway.o
+# automatic
+# * := TRDP_Gateway
+# automatic
+# < := TRDP_Gateway.c
+# automatic
+# + := TRDP_Gateway.c
+# automatic
+# % := 
+# automatic
+# ^ := TRDP_Gateway.c
+# automatic
+# ? := TRDP_Gateway.c
+# automatic
+# | := build
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=2/16=12%
 #  recipe to execute (from 'Makefile', line 124):
 	@echo "### Building $(notdir $<)"
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -351,13 +369,6 @@ build/trdp_mdcom.o:
 #  File has not been updated.
 
 # Not a target:
-Components/Gpio/src/GW_gpio.c:
-#  Implicit rule search has been done.
-#  Last modified 2026-02-17 14:06:07.965556733
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
 build/vos_sock.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -374,13 +385,6 @@ build/GW_uart.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-
-# Not a target:
-Components/Mqtt/src/mqtt.c:
-#  Implicit rule search has been done.
-#  Last modified 2026-02-20 12:13:30.244288465
-#  File has been updated.
-#  Successfully updated.
 
 # Not a target:
 build/tau_so_if.o:
@@ -410,7 +414,8 @@ build/vos_mem.o:
 
 UDP_Receiver: build/TRDP_Gateway.o build/GW_gpio.o build/mqtt.o build/GW_trdp_app.o build/GW_trdp_md.o build/GW_trdp_pd.o build/GW_uart.o build/Udp_Rx.o build/libtrdp.a Middlewares/Mqtt/lib/libmosquitto.a
 #  Implicit rule search has not been done.
-#  Last modified 2026-02-20 11:44:24.133541715
+ 
+#  Last modified 2026-02-20 16:08:03.996644474
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
@@ -442,7 +447,6 @@ build/tau_xsession.o:
 # Not a target:
 build/trdp_dllmain.o:
 #  Implicit rule search has not been done.
- 
 #  Modification time never checked.
 #  File has not been updated.
 
@@ -476,39 +480,17 @@ all: UDP_Receiver
 
 build:
 #  Implicit rule search has not been done.
-#  Last modified 2026-02-20 11:44:23.993542295
+#  Last modified 2026-02-20 16:08:03.854656214
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 121):
 	@mkdir -p $(OBJ_DIR)
 
-build/mqtt.o: Components/Mqtt/src/mqtt.c | build
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'mqtt'
-#  Last modified 2026-02-20 11:44:13.077585981
-#  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := build/mqtt.o
-# automatic
-# * := mqtt
-# automatic
-# < := Components/Mqtt/src/mqtt.c
-# automatic
-# + := Components/Mqtt/src/mqtt.c
-# automatic
-# % := 
-# automatic
-# ^ := Components/Mqtt/src/mqtt.c
-# automatic
-# ? := Components/Mqtt/src/mqtt.c
-# automatic
-# | := build
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=2/16=12%
-#  recipe to execute (from 'Makefile', line 124):
-	@echo "### Building $(notdir $<)"
-	@$(CC) $(CFLAGS) -c $< -o $@
+# Not a target:
+build/mqtt.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 build/GW_trdp_pd.o:
@@ -537,15 +519,11 @@ build/trdp_xml.o:
 #  Modification time never checked.
 #  File has not been updated.
 
-build/GW_gpio.o: Components/Gpio/src/GW_gpio.c | build
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'GW_gpio'
-#  Last modified 2026-02-19 09:56:40.937324498
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 124):
-	@echo "### Building $(notdir $<)"
-	@$(CC) $(CFLAGS) -c $< -o $@
+# Not a target:
+build/GW_gpio.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 build/vos_thread.o:
@@ -560,12 +538,12 @@ build/Udp_Rx.o:
 #  File has not been updated.
 
 .PHONY: all clean
+ 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
 # Not a target:
- 
 build/trdp_pdcom.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -584,7 +562,7 @@ build/tau_xmarshall.o:
 #  File has not been updated.
 
 # files hash-table stats:
-# Load=45/1024=4%, Rehash=0, Collisions=0/125=0%
+# Load=43/1024=4%, Rehash=0, Collisions=0/99=0%
 # VPATH Search Paths
 
 vpath %.h Middlewares/Trdp/api:Middlewares/Trdp/vos/api:Middlewares/Trdp/common:Middlewares/Trdp/vos/common:Middlewares/Trdp/vos/posix:-I:Middlewares/Mqtt/inc
@@ -594,12 +572,12 @@ vpath %.h Middlewares/Trdp/api:Middlewares/Trdp/vos/api:Middlewares/Trdp/common:
 # General ('VPATH' variable) search path:
 # Components/Gpio/src:Components/Mqtt/src:Components/Trdp_app/src:Components/Trdp_app/src:Components/Trdp_app/src:Components/Uart/src:Components/Udp/src:Middlewares/Trdp/common:Middlewares/Trdp/vos/common:Middlewares/Trdp/vos/posix
 
-# strcache buffers: 1 (0) / strings = 124 / storage = 1776 B / avg = 14 B
-# current buf: size = 8162 B / used = 1776 B / count = 124 / avg = 14 B
+# strcache buffers: 1 (0) / strings = 120 / storage = 1706 B / avg = 14 B
+# current buf: size = 8162 B / used = 1706 B / count = 120 / avg = 14 B
 
-# strcache performance: lookups = 194 / hit rate = 36%
+# strcache performance: lookups = 180 / hit rate = 33%
 # hash-table stats:
-# Load=124/8192=2%, Rehash=0, Collisions=0/194=0%
-# Finished Make data base on Fri Feb 20 12:33:49 2026
+# Load=120/8192=1%, Rehash=0, Collisions=0/180=0%
+# Finished Make data base on Fri Feb 20 17:02:21 2026
 
  

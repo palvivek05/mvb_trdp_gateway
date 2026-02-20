@@ -442,7 +442,7 @@ void pdCallback(void *pRefCon,
         case TRDP_TIMEOUT_ERR:
         {
             /* The application can decide here if old data shall be invalidated or kept    */
-            printf("Default Packet timed out (ComID %d, SrcIP: %s)\n", pMsg->comId, vos_ipDotted(pMsg->srcIpAddr));
+            //printf("Default Packet timed out (ComID %d, SrcIP: %s)\n", pMsg->comId, vos_ipDotted(pMsg->srcIpAddr));
         }
         break;
         default:

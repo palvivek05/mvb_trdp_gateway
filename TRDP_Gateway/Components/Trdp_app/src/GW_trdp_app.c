@@ -997,10 +997,10 @@ void* pvEthTrdp(void* arg)
     vSetDefTrdpMdMsgConfig();
 
     /* print default MD config  */
-    vMdConfigPrint();
+    //vMdConfigPrint();
 
     /* print default PD config  */
-    vPdConfigPrint();
+    //vPdConfigPrint();
 
     /* intit the Trdp Stack for Pd and Md Message type according to configuration */
     if ( TRDP_NO_ERR != eTrdpInit())

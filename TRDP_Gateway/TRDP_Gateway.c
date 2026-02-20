@@ -70,7 +70,8 @@ int main(void)
 {
     sighandler_t          prev_sigint;
     sighandler_t          prev_sigterm;
-
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
     printf("/\\Ganpti Bapa Moriya/\\\r\n");
 
     /* Install signal handlers — check previous handler for validity */
@@ -94,6 +95,7 @@ int main(void)
      * @brief 
      * 
      */
+    //iRet = pthread_create(&stMqttThreadId, NULL, pvMqttThread, NULL);
     iRet = pthread_create(&stThreadTrdpId, NULL, pvEthTrdp, NULL);
     if (iRet != 0)
     {

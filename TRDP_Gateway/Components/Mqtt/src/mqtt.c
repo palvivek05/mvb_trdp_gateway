@@ -92,16 +92,18 @@ void *pvMqttThread(void *arg)
     int rc = 0;
     uint8_t *PlcHmi1_P = NULL;
     char payload[2000] = {0};
+    int ErrMqtt = 0;
 
-    mosquitto_lib_init();
+    printf("this is debug print 1\n");
+   // mosquitto_lib_init();
 
+    printf("Connect failed: %d\n",  mosquitto_lib_init());
     mosq = mosquitto_new("ccmp13_client", true, NULL);
     if (!mosq)
     {
         printf("Failed to create client\n");
         return -1;
     }
-
     rc = mosquitto_connect(mosq, BROKER, PORT, 60);
     if (rc != MOSQ_ERR_SUCCESS)
     {
@@ -118,7 +120,7 @@ void *pvMqttThread(void *arg)
         {
             printf("the buffer is empty \n");
         }
-
+        printf("this is debug print\n");
         snprintf(payload, sizeof(payload), "PLC_BattVolt_MCA: %d\n", ((PlcHmi1_P[8] << 8)  | (PlcHmi1_P[9])));
         snprintf(&payload[strlen(payload)], sizeof(payload), "PLC_BattVolt_MCB: %d\n",    ((PlcHmi1_P[10] << 8) | (PlcHmi1_P[11])));
         snprintf(&payload[strlen(payload)], sizeof(payload), "PLC_BraPre_DMA:   %0.2f\n", (float)((PlcHmi1_P[12] << 8) | (PlcHmi1_P[13])));
@@ -146,7 +148,7 @@ void *pvMqttThread(void *arg)
         snprintf(&payload[strlen(payload)], sizeof(payload), "DMBTCU1Cut : %d\n", READ_BIT_16(((PlcHmi1_P[28] << 8) | (PlcHmi1_P[29])), DMBTCU1CUT));
         snprintf(&payload[strlen(payload)], sizeof(payload), "DMBTCU2Cut : %d\n", READ_BIT_16(((PlcHmi1_P[28] << 8) | (PlcHmi1_P[29])), DMBTCU2CUT));
 
-        mosquitto_publish(mosq,
+       ErrMqtt =  mosquitto_publish(mosq,
                           NULL,
                           TOPIC,
                           strlen(payload),
@@ -154,7 +156,7 @@ void *pvMqttThread(void *arg)
                           1,
                           false);
 
-        printf("Message published\n");
+        printf("Message published status %d\n",ErrMqtt );
         sleep(1);
     }
 
